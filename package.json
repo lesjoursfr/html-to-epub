@@ -37,6 +37,6 @@
 		"uslug": "^1.0.4"
 	},
 	"devDependencies": {
-		"eslint": "^7.31.0"
+		"eslint": "^7.32.0"
 	}
 }
