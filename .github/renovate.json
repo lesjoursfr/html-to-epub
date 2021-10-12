@@ -1,0 +1,40 @@
+{
+	"extends": [
+		"config:base"
+	],
+	"timezone": "Europe/Paris",
+	"schedule": [
+		"before 2am every monday"
+	],
+	"rangeStrategy": "bump",
+	"lockFileMaintenance": {
+		"enabled": true
+	},
+	"packageRules": [
+		{
+			"matchDatasources": [
+				"npm"
+			],
+			"stabilityDays": 3
+		},
+		{
+			"matchDatasources": [
+				"npm"
+			],
+			"matchPackagePatterns": [
+				"*"
+			],
+			"matchUpdateTypes": [
+				"minor",
+				"patch"
+			],
+			"groupName": "all non-major dependencies",
+			"groupSlug": "all-minor-patch"
+		}
+	],
+	"ignorePaths": [
+		"**/config/**",
+		"**/docs/**",
+		"**/server/**"
+	]
+}
