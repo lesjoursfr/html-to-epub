@@ -9,7 +9,7 @@
 		"url": "https://github.com/lesjoursfr/html-to-epub/issues"
 	},
 	"engines": {
-		"node": ">=v14.18.0"
+		"node": ">=v14.18.1"
 	},
 	"scripts": {
 		"test": "node test/test.js"
