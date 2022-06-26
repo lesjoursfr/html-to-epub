@@ -1,6 +1,5 @@
 import archiver from "archiver";
 import axios from "axios";
-import { load as loadHtml } from "cheerio";
 import { remove as diacritics } from "diacritics";
 import { renderFile } from "ejs";
 import { encodeXML } from "entities";
@@ -17,6 +16,11 @@ import { copySync, removeSync } from "fs-extra";
 import { getExtension, getType } from "mime";
 import { basename, dirname, resolve } from "path";
 import uslug from "uslug";
+import { Plugin, unified } from "unified";
+import rehypeStringify from "rehype-stringify";
+import rehypeParse from "rehype-parse";
+import { visit } from "unist-util-visit";
+import { Element } from "hast";
 
 // Allowed HTML attributes & tags
 const allowedAttributes = [
@@ -399,80 +403,103 @@ export class EPub {
       const id = `item_${index}`;
       const dir = dirname(filePath);
 
+      const loadHtml = (content: string, plugins: Plugin[]) =>
+        unified()
+          .use(rehypeParse)
+          .use(plugins)
+          // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
+          .use(rehypeStringify, { allowDangerousHtml: true, voids: [] })
+          .processSync(content)
+          .toString();
+
       // Parse the content
-      const $ = loadHtml(content.data, {
-        lowerCaseTags: true,
-        recognizeSelfClosing: true,
-      });
-
-      $($("body > *").get().reverse()).each((idx, elem) => {
-        const attrs = elem.attribs;
-        if (["img", "br", "hr"].includes(elem.name)) {
-          if (elem.name === "img") {
-            $(elem).attr("alt", $(elem).attr("alt") || "image-placeholder");
-          }
-        }
-
-        for (const k in attrs) {
-          if (allowedAttributes.includes(k)) {
-            if (k === "type") {
-              if (elem.name !== "script") {
-                $(elem).removeAttr(k);
+      const html = loadHtml(content.data, [
+        () => (tree) => {
+          const validateElements = (node: Element) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const attrs = node.properties!;
+            if (["img", "br", "hr"].includes(node.tagName)) {
+              if (node.tagName === "img") {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                node.properties!.alt = node.properties?.alt || "image-placeholder";
               }
             }
-          } else {
-            $(elem).removeAttr(k);
-          }
-        }
-        if (this.version === 2) {
-          if (!allowedXhtml11Tags.includes(elem.name)) {
-            if (this.verbose) {
-              console.log("Warning (content[" + index + "]):", elem.name, "tag isn't allowed on EPUB 2/XHTML 1.1 DTD.");
-            }
-            const child = $(elem).html();
-            $(elem).replaceWith($("<div>" + child + "</div>"));
-          }
-        }
-      });
 
-      $("img").each((idx, elem) => {
-        const url = $(elem).attr("src");
-        if (url === undefined) {
-          return;
-        }
+            for (const k in Object.keys(attrs)) {
+              if (allowedAttributes.includes(k)) {
+                if (k === "type") {
+                  if (attrs[k] !== "script") {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    delete node.properties![k];
+                  }
+                }
+              } else {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                delete node.properties![k];
+              }
+            }
 
-        let extension, id;
-        const image = this.images.find((element) => element.url === url);
-        if (image) {
-          id = image.id;
-          extension = image.extension;
-        } else {
-          id = uuid();
-          const mediaType = getType(url.replace(/\?.*/, ""));
-          if (mediaType === null) {
-            if (this.verbose) {
-              console.error("[Image Error]", `The image can't be processed : ${url}`);
+            if (this.version === 2) {
+              if (!allowedXhtml11Tags.includes(node.tagName)) {
+                if (this.verbose) {
+                  console.log(
+                    "Warning (content[" + index + "]):",
+                    node.tagName,
+                    "tag isn't allowed on EPUB 2/XHTML 1.1 DTD."
+                  );
+                }
+                node.tagName = "div";
+              }
             }
-            return;
-          }
-          extension = getExtension(mediaType);
-          if (extension === null) {
-            if (this.verbose) {
-              console.error("[Image Error]", `The image can't be processed : ${url}`);
+          };
+
+          visit(tree, "element", validateElements);
+        },
+        () => (tree) => {
+          const processImgTags = (node: Element) => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const url = node.properties!.src as string | null | undefined;
+            if (url === undefined || url === null) {
+              return;
             }
-            return;
-          }
-          this.images.push({ id, url, dir, mediaType, extension });
-        }
-        $(elem).attr("src", `images/${id}.${extension}`);
-      });
+
+            let extension, id;
+            const image = this.images.find((element) => element.url === url);
+            if (image) {
+              id = image.id;
+              extension = image.extension;
+            } else {
+              id = uuid();
+              const mediaType = getType(url.replace(/\?.*/, ""));
+              if (mediaType === null) {
+                if (this.verbose) {
+                  console.error("[Image Error]", `The image can't be processed : ${url}`);
+                }
+                return;
+              }
+              extension = getExtension(mediaType);
+              if (extension === null) {
+                if (this.verbose) {
+                  console.error("[Image Error]", `The image can't be processed : ${url}`);
+                }
+                return;
+              }
+              this.images.push({ id, url, dir, mediaType, extension });
+            }
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            node.properties!.src = `images/${id}.${extension}`;
+          };
+
+          visit(tree, "element", processImgTags);
+        },
+      ]);
 
       // Return the EpubContent
       return {
         id: id,
         href: href,
         title: content.title,
-        data: $.html("body > *", { xmlMode: true }),
+        data: html,
         url: content.url ?? null,
         author: content.author ? (typeof content.author === "string" ? [content.author] : content.author) : [],
         filePath: filePath,
