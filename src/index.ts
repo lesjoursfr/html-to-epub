@@ -16,10 +16,10 @@ import { copySync, removeSync } from "fs-extra";
 import { getExtension, getType } from "mime";
 import { basename, dirname, resolve } from "path";
 import uslug from "uslug";
-import { Plugin, unified } from "unified";
+import unified, { Plugin } from "unified";
 import rehypeStringify from "rehype-stringify";
 import rehypeParse from "rehype-parse";
-import { visit } from "unist-util-visit";
+import visit from "unist-util-visit";
 import { Element } from "hast";
 
 // Allowed HTML attributes & tags

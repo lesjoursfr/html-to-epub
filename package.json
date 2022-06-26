@@ -46,10 +46,10 @@
 		"fs-extra": "^10.1.0",
 		"mime": "^3.0.0",
 		"uslug": "^1.0.4",
-		"unist-util-visit": "^4.1.0",
-		"rehype-parse": "^8.0.4",
-		"rehype-stringify": "^9.0.3",
-		"unified": "^10.1.2"
+		"unist-util-visit": "^2.0.3",
+		"rehype-parse": "^7.0.1",
+		"rehype-stringify": "^8.0.0",
+		"unified": "^9.2.2"
 	},
 	"devDependencies": {
 		"@tsconfig/node16": "^1.0.3",
