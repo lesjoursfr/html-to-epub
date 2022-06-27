@@ -405,7 +405,7 @@ export class EPub {
 
       const loadHtml = (content: string, plugins: Plugin[]) =>
         unified()
-          .use(rehypeParse)
+          .use(rehypeParse, {fragment: true})
           .use(plugins)
           // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
           .use(rehypeStringify, { allowDangerousHtml: true, voids: [] })
