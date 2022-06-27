@@ -17,9 +17,9 @@ import { getExtension, getType } from "mime";
 import { basename, dirname, resolve } from "path";
 import uslug from "uslug";
 import unified, { Plugin } from "unified";
-import rehypeStringify from "rehype-stringify";
-import rehypeParse from "rehype-parse";
-import visit from "unist-util-visit";
+import rehypeStringify = require("rehype-stringify");
+import rehypeParse = require("rehype-parse");
+import visit = require("unist-util-visit");
 import { Element } from "hast";
 
 // Allowed HTML attributes & tags
