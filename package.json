@@ -47,7 +47,7 @@
 		"mime": "^3.0.0",
 		"uslug": "^1.0.4",
 		"unist-util-visit": "^2.0.3",
-		"rehype-parse": "^7.0.1",
+		"rehype-parse": "^8.0.4",
 		"rehype-stringify": "^8.0.0",
 		"unified": "^9.2.2"
 	},
