@@ -1,12 +1,12 @@
 {
-	"name": "@lesjoursfr/html-to-epub",
-	"version": "3.0.1",
+	"name": "@waptik/html-to-epub",
+	"version": "1.0.0",
 	"description": "A library to generate EPUB from HTML. Inspired by epub-gen.",
 	"license": "MIT",
-	"repository": "lesjoursfr/html-to-epub",
-	"homepage": "https://github.com/lesjoursfr/html-to-epub#readme",
+	"repository": "waptik/html-to-epub",
+	"homepage": "https://github.com/waptik/html-to-epub#readme",
 	"bugs": {
-		"url": "https://github.com/lesjoursfr/html-to-epub/issues"
+		"url": "https://github.com/waptik/html-to-epub/issues"
 	},
 	"publishConfig": {
 		"access": "public"

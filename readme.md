@@ -1,10 +1,9 @@
-[![npm version](https://badge.fury.io/js/@lesjoursfr%2Fhtml-to-epub.svg)](https://badge.fury.io/js/@lesjoursfr%2Fhtml-to-epub)
-[![QC Checks](https://github.com/lesjoursfr/html-to-epub/actions/workflows/quality-control.yml/badge.svg)](https://github.com/lesjoursfr/html-to-epub/actions/workflows/quality-control.yml)
+[![npm version](https://badge.fury.io/js/@waptik%2Fhtml-to-epub.svg)](https://badge.fury.io/js/@waptik%2Fhtml-to-epub)
+[![QC Checks](https://github.com/waptik/html-to-epub/actions/workflows/quality-control.yml/badge.svg)](https://github.com/waptik/html-to-epub/actions/workflows/quality-control.yml)
 
-# @lesjoursfr/html-to-epub
+# @waptik/html-to-epub
 
-Generate EPUB books from HTML with simple API in Node.js.
-Inspired by [cyrilis/epub-gen](https://github.com/cyrilis/epub-gen/)
+Thi is an updated fork of [lesjoursfr/html-to-epub](https://github.com/lesjoursfr/html-to-epub/)
 
 # What is this library?
 
@@ -15,13 +14,13 @@ This epub library will generate temp html and download images in your DOMs, then
 Install the lib and add it as a dependency :
 
 ```
-    npm install @lesjoursfr/html-to-epub
+    npm install @waptik/html-to-epub
 ```
 
 Then put this in your code:
 
 ```javascript
-const { EPub } = require("@lesjoursfr/html-to-epub");
+const { EPub } = require("@waptik/html-to-epub");
 
 const epub = new EPub(option, output);
 epub.render()
