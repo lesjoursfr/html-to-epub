@@ -255,33 +255,31 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 export interface EpubContentOptions {
   title: string;
   data: string;
-  url: string | undefined;
-  author: Array<string> | string | undefined;
-  filename: string | undefined;
-  excludeFromToc: boolean | undefined;
-  beforeToc: boolean | undefined;
+  url?: string;
+  author?: Array<string> | string;
+  filename?: string;
+  excludeFromToc?: boolean;
+  beforeToc?: boolean;
 }
 
-export interface EpubOptions {
-  title: string;
+export interface EpubOptions extends Pick<EpubContentOptions, "title" | "author">{
   description: string;
-  cover: string | undefined;
-  publisher: string | undefined;
-  author: Array<string> | string | undefined;
-  tocTitle: string | undefined;
-  appendChapterTitles: boolean | undefined;
-  date: string | undefined;
-  lang: string | undefined;
-  css: string | undefined;
-  fonts: Array<string> | undefined;
+  cover?: string;
+  publisher?: string;
+  tocTitle?: string;
+  appendChapterTitles?: boolean;
+  date?: string;
+  lang?: string;
+  css?: string;
+  fonts?: Array<string>;
   content: Array<EpubContentOptions>;
-  customOpfTemplatePath: string | undefined;
-  customNcxTocTemplatePath: string | undefined;
-  customHtmlTocTemplatePath: string | undefined;
-  version: number | undefined;
-  userAgent: string | undefined;
-  verbose: boolean | undefined;
-  tempDir: string | undefined;
+  customOpfTemplatePath?: string;
+  customNcxTocTemplatePath?: string;
+  customHtmlTocTemplatePath?: string;
+  version?: number;
+  userAgent?: string;
+  verbose?: boolean;
+  tempDir?: string;
 }
 
 interface EpubContent {
