@@ -61,10 +61,10 @@
 		"@types/mime": "^3.0.1",
 		"@types/node": "^18.6.3",
 		"@types/uslug": "^1.0.1",
-		"@typescript-eslint/eslint-plugin": "^5.38.1",
-		"@typescript-eslint/parser": "^5.38.1",
+		"@typescript-eslint/eslint-plugin": "^5.40.1",
+		"@typescript-eslint/parser": "^5.40.1",
 		"ava": "^4.3.3",
-		"eslint": "^8.24.0",
+		"eslint": "^8.25.0",
 		"eslint-config-prettier": "^8.5.0",
 		"prettier": "^2.7.1",
 		"ts-node": "^10.9.1",
@@ -78,5 +78,5 @@
 			"--loader=ts-node/esm"
 		]
 	},
-	"packageManager": "yarn@3.2.3"
+	"packageManager": "yarn@3.2.4"
 }
