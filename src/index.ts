@@ -461,6 +461,9 @@ export class EPub {
         },
         () => (tree) => {
           const processImgTags = (node: Element) => {
+            if (!["img", "input"].includes(node.tagName)) {
+              return;
+            }
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const url = node.properties!.src as string | null | undefined;
             if (url === undefined || url === null) {
