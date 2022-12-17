@@ -23,6 +23,34 @@ import { visit } from "unist-util-visit";
 import { fileURLToPath } from "url";
 import uslug from "uslug";
 
+// Attributes which take a boolean as value
+const booleanAttributes = [
+  "allowTransparency",
+  "allowfullscreen",
+  "async",
+  "autofocus",
+  "autoplay",
+  "checked",
+  "controls",
+  "default",
+  "defer",
+  "disabled",
+  "formnovalidate",
+  "inert",
+  "ismap",
+  "itemscope",
+  "loop",
+  "multiple",
+  "muted",
+  "nomodule",
+  "novalidate",
+  "open",
+  "playsinline",
+  "readonly",
+  "required",
+  "reversed",
+  "selected",
+];
 // Allowed HTML attributes & tags
 const allowedAttributes = [
   "content",
@@ -426,6 +454,14 @@ export class EPub {
               if (node.tagName === "img") {
                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 node.properties!.alt = node.properties?.alt || "image-placeholder";
+              }
+            }
+
+            for (const booleanAttr of booleanAttributes) {
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              if (node.properties![booleanAttr]) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                delete node.properties![booleanAttr];
               }
             }
 
