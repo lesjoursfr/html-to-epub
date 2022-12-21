@@ -69,7 +69,7 @@ const allowedAttributes = [
   "aria-valuemin",
   "aria-valuenow",
   "aria-valuetext",
-  "class",
+  "className",
   "content",
   "contenteditable",
   "contextmenu",
