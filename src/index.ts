@@ -655,13 +655,20 @@ export class EPub {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let writeStream: any;
-    if (this.cover.slice(0, 4) === "http") {
-      const httpRequest = await axios.get(this.cover, {
-        responseType: "stream",
-        headers: { "User-Agent": this.userAgent },
-      });
-      writeStream = httpRequest.data;
-      writeStream.pipe(createWriteStream(destPath));
+    if (this.cover.slice(0, 4) === "http" || this.cover.slice(0, 2) === "//") {
+      try {
+        const httpRequest = await axios.get(this.cover, {
+          responseType: "stream",
+          headers: { "User-Agent": this.userAgent },
+        });
+        writeStream = httpRequest.data;
+        writeStream.pipe(createWriteStream(destPath));
+      } catch (err) {
+        if (this.verbose) {
+          console.error(`The cover image can't be processed : ${this.cover}, ${err}`);
+        }
+        return;
+      }
     } else {
       writeStream = createReadStream(this.cover);
       writeStream.pipe(createWriteStream(destPath));
@@ -695,13 +702,20 @@ export class EPub {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let requestAction: any;
-    if (image.url.indexOf("http") === 0) {
-      const httpRequest = await axios.get(image.url, {
-        responseType: "stream",
-        headers: { "User-Agent": this.userAgent },
-      });
-      requestAction = httpRequest.data;
-      requestAction.pipe(createWriteStream(filename));
+    if (image.url.indexOf("http") === 0 || image.url.indexOf("//") === 0) {
+      try {
+        const httpRequest = await axios.get(image.url, {
+          responseType: "stream",
+          headers: { "User-Agent": this.userAgent },
+        });
+        requestAction = httpRequest.data;
+        requestAction.pipe(createWriteStream(filename));
+      } catch (err) {
+        if (this.verbose) {
+          console.error(`The image can't be processed : ${image.url}, ${err}`);
+        }
+        return;
+      }
     } else {
       requestAction = createReadStream(resolve(image.dir, image.url));
       requestAction.pipe(createWriteStream(filename));
