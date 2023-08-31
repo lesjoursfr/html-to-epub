@@ -39,7 +39,7 @@
 		"test": "NODE_OPTIONS='--loader=ts-node/esm' ava"
 	},
 	"dependencies": {
-		"archiver": "^5.3.2",
+		"archiver": "^6.0.0",
 		"axios": "^1.5.0",
 		"diacritics": "^1.3.0",
 		"ejs": "^3.1.9",
