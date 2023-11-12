@@ -14,6 +14,7 @@ import {
 } from "fs";
 import fsExtra from "fs-extra";
 import { Element } from "hast";
+import { imageSize } from "image-size";
 import mime from "mime";
 import { basename, dirname, resolve } from "path";
 import rehypeParse from "rehype-parse";
@@ -22,6 +23,7 @@ import { Plugin, unified } from "unified";
 import { visit } from "unist-util-visit";
 import { fileURLToPath } from "url";
 import uslug from "uslug";
+import { promisify } from "util";
 
 // Allowed HTML attributes & tags
 const allowedAttributes = [
@@ -313,6 +315,10 @@ export class EPub {
   cover: string | null;
   coverMediaType: string | null;
   coverExtension: string | null;
+  coverDimensions = {
+    width: 0,
+    height: 0
+  };
   publisher: string;
   author: Array<string>;
   tocTitle: string;
@@ -548,12 +554,13 @@ export class EPub {
     }));
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  async render(): Promise<any> {
-    if (this.verbose) {
-      console.log("Generating Template Files.....");
+  async render(): Promise<{ result: string }> {
+    // Create directories
+    if (!existsSync(this.tempDir)) {
+      mkdirSync(this.tempDir);
     }
-    await this.generateTempFile(this.content);
+    mkdirSync(this.tempEpubDir);
+    mkdirSync(resolve(this.tempEpubDir, "./OEBPS"));
 
     if (this.verbose) {
       console.log("Downloading Images...");
@@ -564,6 +571,11 @@ export class EPub {
       console.log("Making Cover...");
     }
     await this.makeCover();
+
+    if (this.verbose) {
+      console.log("Generating Template Files.....");
+    }
+    await this.generateTempFile(this.content);
 
     if (this.verbose) {
       console.log("Generating Epub Files...");
@@ -588,13 +600,6 @@ export class EPub {
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${this.lang}">
 `;
-
-    // Create directories
-    if (!existsSync(this.tempDir)) {
-      mkdirSync(this.tempDir);
-    }
-    mkdirSync(this.tempEpubDir);
-    mkdirSync(resolve(this.tempEpubDir, "./OEBPS"));
 
     // Copy the CSS style
     if (!this.css) {
@@ -679,8 +684,7 @@ export class EPub {
 
     const destPath = resolve(this.tempEpubDir, `./OEBPS/cover.${this.coverExtension}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let writeStream: any;
+    let writeStream: fsExtra.ReadStream;
     if (this.cover.slice(0, 4) === "http" || this.cover.slice(0, 2) === "//") {
       try {
         const httpRequest = await axios.get(this.cover, {
@@ -700,21 +704,35 @@ export class EPub {
       writeStream.pipe(createWriteStream(destPath));
     }
 
-    return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      writeStream.on("error", (err: any) => {
+    const promiseStream = new Promise<void>((resolve, reject) => {
+      writeStream.on("end", () => resolve());
+      writeStream.on("error", (err: unknown) => {
         console.error("Error", err);
         unlinkSync(destPath);
         reject(err);
       });
-
-      writeStream.on("end", () => {
-        if (this.verbose) {
-          console.log("[Success] cover image downloaded successfully!");
-        }
-        resolve();
-      });
     });
+
+    await promiseStream;
+
+    if (this.verbose) {
+      console.log("[Success] cover image downloaded successfully!");
+    }
+
+    const sizeOf = promisify(imageSize);
+
+    // Retrieve image dimensions
+    const result = await sizeOf(destPath);
+    if (!result || !result.width || !result.height) {
+      throw new Error(`Failed to retrieve cover image dimensions for "${destPath}"`);
+    }
+
+    this.coverDimensions.width = result.width;
+    this.coverDimensions.height = result.height;
+
+    if (this.verbose) {
+      console.log(`cover image dimensions: ${this.coverDimensions.width} x ${this.coverDimensions.height}`);
+    }
   }
 
   private async downloadImage(image: EpubImage): Promise<void> {
