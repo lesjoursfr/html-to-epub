@@ -620,6 +620,7 @@ export class EPub {
       const result = await renderFile(content.templatePath, {
         ...this,
         ...content,
+        bookTitle: this.title,
         encodeXML,
         docHeader,
       }, {
