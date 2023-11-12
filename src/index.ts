@@ -388,9 +388,40 @@ export class EPub {
       this.coverExtension = null;
     }
 
-    // Parse contents & save images
+    const loadHtml = (content: string, plugins: Plugin[]) =>
+        unified()
+          .use(rehypeParse, { fragment: true })
+          .use(plugins)
+          // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
+          .use(rehypeStringify, { allowDangerousHtml: true, voids: [] })
+          .processSync(content)
+          .toString();
+
     this.images = [];
-    this.content = options.content.map<EpubContent>((content, index) => {
+    this.content = [];
+
+    // Insert cover in content
+    if (this.cover) {
+      const filePath = resolve(this.tempEpubDir, `./OEBPS/cover.xhtml`);
+
+      this.content.push({
+        id: `item_${this.content.length}`,
+        href: 'cover.xhtml',
+        title: 'cover',
+        data: '',
+        url: null,
+        author: [],
+        filePath,
+        excludeFromToc: true,
+        beforeToc: true,
+      });
+    }
+
+    // Parse contents & save images
+    const contentOffset = this.content.length;
+    this.content.push(...options.content.map<EpubContent>((content, i) => {
+      const index = contentOffset + i;
+
       // Get the content URL & path
       let href, filePath;
       if (content.filename === undefined) {
@@ -409,15 +440,6 @@ export class EPub {
       // Content ID & directory
       const id = `item_${index}`;
       const dir = dirname(filePath);
-
-      const loadHtml = (content: string, plugins: Plugin[]) =>
-        unified()
-          .use(rehypeParse, { fragment: true })
-          .use(plugins)
-          // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
-          .use(rehypeStringify, { allowDangerousHtml: true, voids: [] })
-          .processSync(content)
-          .toString();
 
       // Parse the content
       const html = loadHtml(content.data, [
@@ -516,7 +538,7 @@ export class EPub {
         excludeFromToc: content.excludeFromToc === true, // Default to false
         beforeToc: content.beforeToc === true, // Default to false
       };
-    });
+    }));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -586,6 +608,15 @@ export class EPub {
       });
     }
 
+    // Add cover page
+    if (this.cover) {
+      const htmlCoverPath = this.customHtmlCoverTemplatePath || resolve(__dirname, "../templates/cover.xhtml.ejs");
+      if (!existsSync(htmlCoverPath)) {
+        throw new Error("Custom file to HTML cover template not found.");
+      }
+      writeFileSync(resolve(this.tempEpubDir, "./OEBPS/cover.xhtml"), await renderFile(htmlCoverPath, this));
+    }
+
     // Write content files
     contents.forEach((content) => {
       let data = `${docHeader}
@@ -647,14 +678,6 @@ export class EPub {
       throw new Error("Custom file to HTML toc template not found.");
     }
     writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.xhtml"), await renderFile(htmlTocPath, this));
-
-    if (this.cover) {
-      const htmlCoverPath = this.customHtmlCoverTemplatePath || resolve(__dirname, "../templates/cover.xhtml.ejs");
-      if (!existsSync(htmlCoverPath)) {
-        throw new Error("Custom file to HTML cover template not found.");
-      }
-      writeFileSync(resolve(this.tempEpubDir, "./OEBPS/cover.xhtml"), await renderFile(htmlCoverPath, this));
-    }
   }
 
   private async makeCover(): Promise<void> {
