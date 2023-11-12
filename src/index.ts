@@ -278,6 +278,7 @@ export interface EpubOptions {
   customOpfTemplatePath?: string;
   customNcxTocTemplatePath?: string;
   customHtmlTocTemplatePath?: string;
+  customHtmlCoverTemplatePath?: string;
   version?: number;
   userAgent?: string;
   verbose?: boolean;
@@ -323,6 +324,7 @@ export class EPub {
   images: Array<EpubImage>;
   customOpfTemplatePath: string | null;
   customNcxTocTemplatePath: string | null;
+  customHtmlCoverTemplatePath: string | null;
   customHtmlTocTemplatePath: string | null;
   version: number;
   userAgent: string;
@@ -360,6 +362,7 @@ export class EPub {
     this.customOpfTemplatePath = options.customOpfTemplatePath ?? null;
     this.customNcxTocTemplatePath = options.customNcxTocTemplatePath ?? null;
     this.customHtmlTocTemplatePath = options.customHtmlTocTemplatePath ?? null;
+    this.customHtmlCoverTemplatePath = options.customHtmlCoverTemplatePath ?? null;
     this.version = options.version ?? 3;
     this.userAgent =
       options.userAgent ??
@@ -644,6 +647,14 @@ export class EPub {
       throw new Error("Custom file to HTML toc template not found.");
     }
     writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.xhtml"), await renderFile(htmlTocPath, this));
+
+    if (this.cover) {
+      const htmlCoverPath = this.customHtmlCoverTemplatePath || resolve(__dirname, "../templates/cover.xhtml.ejs");
+      if (!existsSync(htmlCoverPath)) {
+        throw new Error("Custom file to HTML cover template not found.");
+      }
+      writeFileSync(resolve(this.tempEpubDir, "./OEBPS/cover.xhtml"), await renderFile(htmlCoverPath, this));
+    }
   }
 
   private async makeCover(): Promise<void> {
