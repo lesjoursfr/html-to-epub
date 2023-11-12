@@ -403,8 +403,6 @@ export class EPub {
 
     // Insert cover in content
     if (this.cover) {
-      const filePath = resolve(this.tempEpubDir, `./OEBPS/cover.xhtml`);
-
       this.content.push({
         id: `item_${this.content.length}`,
         href: 'cover.xhtml',
@@ -412,7 +410,7 @@ export class EPub {
         data: '',
         url: null,
         author: [],
-        filePath,
+        filePath: resolve(this.tempEpubDir, `./OEBPS/cover.xhtml`),
         templatePath: resolve(__dirname, "../templates/cover.xhtml.ejs"),
         excludeFromToc: true,
         beforeToc: true,
@@ -610,15 +608,6 @@ export class EPub {
         fsExtra.copySync(font, resolve(this.tempEpubDir, `./OEBPS/fonts/${filename}`));
         return filename;
       });
-    }
-
-    // Add cover page
-    if (this.cover) {
-      const htmlCoverPath = this.customHtmlCoverTemplatePath || resolve(__dirname, "../templates/cover.xhtml.ejs");
-      if (!existsSync(htmlCoverPath)) {
-        throw new Error("Custom file to HTML cover template not found.");
-      }
-      writeFileSync(resolve(this.tempEpubDir, "./OEBPS/cover.xhtml"), await renderFile(htmlCoverPath, this));
     }
 
     // Write content files

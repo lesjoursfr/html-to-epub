@@ -33,7 +33,7 @@ body.cover {
 	margin: 0;
 }
 
-section.cover {
+div.cover {
 	display: block;
 	text-align: center;
 	height: 95%;
