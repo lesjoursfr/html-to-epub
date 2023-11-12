@@ -35,6 +35,7 @@
     </metadata>
 
     <manifest>
+        <% if (locals.cover) { %><item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/><% } %>
         <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
         <item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav"/>
         <item id="css" href="style.css" media-type="text/css" />
@@ -62,6 +63,7 @@
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>
+        <% if (locals.cover) { %><itemref idref="cover" /><% } %>
         <itemref idref="toc" />
         <% content.forEach(function(content, index){ %>
             <% if(!content.beforeToc && !content.excludeFromToc){ %>
