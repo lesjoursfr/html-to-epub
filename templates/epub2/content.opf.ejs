@@ -47,7 +47,7 @@
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>
-        <% if(locals.cover) { %><itemref idref="cover" linear="no" /><% } %>
+        <% if(locals.cover) { %><itemref idref="cover"/><% } %>
         <% content.forEach(function(content, index){ %>
             <% if(!content.beforeToc && !content.excludeFromToc){ %>
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
