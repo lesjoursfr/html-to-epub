@@ -403,6 +403,11 @@ export class EPub {
 
     // Insert cover in content
     if (this.cover) {
+      const templatePath = this.customHtmlCoverTemplatePath || resolve(__dirname, '../templates/cover.xhtml.ejs');
+      if (!existsSync(templatePath)) {
+        throw new Error("Could not resolve path to cover template HTML.");
+      }
+
       this.content.push({
         id: `item_${this.content.length}`,
         href: 'cover.xhtml',
@@ -411,7 +416,7 @@ export class EPub {
         url: null,
         author: [],
         filePath: resolve(this.tempEpubDir, `./OEBPS/cover.xhtml`),
-        templatePath: resolve(__dirname, "../templates/cover.xhtml.ejs"),
+        templatePath,
         excludeFromToc: true,
         beforeToc: true,
       });
@@ -529,13 +534,13 @@ export class EPub {
 
       // Return the EpubContent
       return {
-        id: id,
-        href: href,
+        id,
+        href,
         title: content.title,
         data: html,
         url: content.url ?? null,
         author: content.author ? (typeof content.author === "string" ? [content.author] : content.author) : [],
-        filePath: filePath,
+        filePath,
         templatePath: contentTemplatePath,
         excludeFromToc: content.excludeFromToc === true, // Default to false
         beforeToc: content.beforeToc === true, // Default to false
