@@ -1,0 +1,18 @@
+<%= docHeader %>
+<head>
+    <title><%= encodeXML(title || "") %></title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body>
+    <% if (title && appendChapterTitles) { %>
+        <h1><%= encodeXML(title) %></h1>
+    <% } %>
+    <% if (title && author && author.length) { %>
+        <p class='epub-author'><%= encodeXML(author.join(", ")) %></p>
+    <% } %>
+    <% if (title && url) { %>
+        <p class='epub-link'><a href='<%= url %>'><%= url %></a></p>
+    <% } %>
+    <%= data %>
+</body>
+</html>

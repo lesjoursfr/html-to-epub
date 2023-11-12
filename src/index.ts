@@ -293,6 +293,7 @@ interface EpubContent {
   url: string | null;
   author: Array<string>;
   filePath: string;
+  templatePath: string;
   excludeFromToc: boolean;
   beforeToc: boolean;
 }
@@ -412,12 +413,14 @@ export class EPub {
         url: null,
         author: [],
         filePath,
+        templatePath: resolve(__dirname, "../templates/cover.xhtml.ejs"),
         excludeFromToc: true,
         beforeToc: true,
       });
     }
 
     // Parse contents & save images
+    const contentTemplatePath = resolve(__dirname, "../templates/content.xhtml.ejs");
     const contentOffset = this.content.length;
     this.content.push(...options.content.map<EpubContent>((content, i) => {
       const index = contentOffset + i;
@@ -535,6 +538,7 @@ export class EPub {
         url: content.url ?? null,
         author: content.author ? (typeof content.author === "string" ? [content.author] : content.author) : [],
         filePath: filePath,
+        templatePath: contentTemplatePath,
         excludeFromToc: content.excludeFromToc === true, // Default to false
         beforeToc: content.beforeToc === true, // Default to false
       };
@@ -618,24 +622,17 @@ export class EPub {
     }
 
     // Write content files
-    contents.forEach((content) => {
-      let data = `${docHeader}
-  <head>
-  <title>${encodeXML(content.title || "")}</title>
-  <link rel="stylesheet" type="text/css" href="style.css" />
-  </head>
-<body>
-`;
-      data += content.title && this.appendChapterTitles ? `<h1>${encodeXML(content.title)}</h1>` : "";
-      data +=
-        content.title && content.author && content.author.length
-          ? `<p class='epub-author'>${encodeXML(content.author.join(", "))}</p>`
-          : "";
-      data +=
-        content.title && content.url ? `<p class='epub-link'><a href='${content.url}'>${content.url}</a></p>` : "";
-      data += `${content.data}</body></html>`;
-      writeFileSync(content.filePath, data);
-    });
+    for (const content of contents) {
+      const result = await renderFile(content.templatePath, {
+        ...this,
+        ...content,
+        encodeXML,
+        docHeader,
+      }, {
+        escape: (markup) => markup,
+      });
+      writeFileSync(content.filePath, result);
+    }
 
     // write meta-inf/container.xml
     mkdirSync(this.tempEpubDir + "/META-INF");
