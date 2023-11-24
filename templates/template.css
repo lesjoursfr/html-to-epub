@@ -38,10 +38,8 @@ body.cover {
 div.cover {
 	display: block;
 	text-align: center;
-}
-
-#image_cover {
 	max-width: 100%;
+	height: auto;
 	/* ignored on older devices */
 	height: 100vh;
 }
