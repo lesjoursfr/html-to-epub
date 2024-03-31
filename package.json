@@ -39,8 +39,8 @@
 		"test": "cross-env NODE_OPTIONS='--loader=ts-node/esm' mocha"
 	},
 	"dependencies": {
-		"archiver": "^6.0.1",
-		"axios": "^1.6.7",
+		"archiver": "^6.0.2",
+		"axios": "^1.6.8",
 		"diacritics": "^1.3.0",
 		"ejs": "^3.1.9",
 		"entities": "^4.5.0",
@@ -54,23 +54,23 @@
 		"uslug": "^1.0.4"
 	},
 	"devDependencies": {
-		"@tsconfig/node18": "^18.2.2",
+		"@tsconfig/node18": "^18.2.4",
 		"@types/archiver": "^6.0.2",
 		"@types/diacritics": "^1.3.3",
 		"@types/ejs": "^3.1.5",
 		"@types/fs-extra": "^11.0.4",
 		"@types/mocha": "^10.0.6",
-		"@types/node": "^20.11.20",
+		"@types/node": "^20.11.30",
 		"@types/uslug": "^1.0.4",
-		"@typescript-eslint/eslint-plugin": "^7.1.0",
-		"@typescript-eslint/parser": "^7.1.0",
+		"@typescript-eslint/eslint-plugin": "^7.4.0",
+		"@typescript-eslint/parser": "^7.4.0",
 		"cross-env": "^7.0.3",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
-		"mocha": "^10.3.0",
+		"mocha": "^10.4.0",
 		"prettier": "^3.2.5",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.3.3"
+		"typescript": "^5.4.3"
 	},
 	"ava": {
 		"extensions": {
@@ -80,5 +80,5 @@
 			"--loader=ts-node/esm"
 		]
 	},
-	"packageManager": "yarn@4.1.0"
+	"packageManager": "yarn@4.1.1"
 }
