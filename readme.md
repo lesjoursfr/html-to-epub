@@ -74,9 +74,9 @@ epub.render()
 -   `customHtmlTocTemplatePath`:
     Optional. For advanced customizations: absolute path to a HTML toc template.
 -   `allowedAttributes`:
-	Optional. For advanced customizations: allowed attributes as part of the XHTML templates. Can extend from exported `defaultAllowedAttributes` constant.
+    Optional. For advanced customizations: allowed attributes as part of the XHTML templates. Can extend from exported `defaultAllowedAttributes` constant.
 -   `allowedXhtml11Tags`:
-	Optional. For advanced customizations: allowed XHTML tags as part of the book's templates. Can extend from exported `defaultAllowedXhtml11Tags` constant.
+    Optional. For advanced customizations: allowed XHTML tags as part of the book's templates. Can extend from exported `defaultAllowedXhtml11Tags` constant.
 -   `content`:
     Book Chapters content. It's should be an array of objects. eg. `[{title: "Chapter 1",data: "<div>..."}, {data: ""},...]`
 
