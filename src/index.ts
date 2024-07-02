@@ -26,7 +26,7 @@ import uslug from "uslug";
 import { promisify } from "util";
 
 // Allowed HTML attributes & tags
-const allowedAttributes = [
+export const defaultAllowedAttributes = [
   "content",
   "alt",
   "id",
@@ -167,7 +167,7 @@ const allowedAttributes = [
   "epub:type",
   "epub:prefix",
 ];
-const allowedXhtml11Tags = [
+export const defaultAllowedXhtml11Tags = [
   "div",
   "p",
   "h1",
@@ -285,6 +285,8 @@ export interface EpubOptions {
   userAgent?: string;
   verbose?: boolean;
   tempDir?: string;
+  allowedAttributes?: string[];
+  allowedXhtml11Tags?: string[];
 }
 
 interface EpubContent {
@@ -339,6 +341,8 @@ export class EPub {
   tempDir: string;
   tempEpubDir: string;
   output: string;
+  allowedAttributes: string[];
+  allowedXhtml11Tags: string[];
 
   constructor(options: EpubOptions, output: string) {
     // File ID
@@ -375,6 +379,8 @@ export class EPub {
       options.userAgent ??
       "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36";
     this.verbose = options.verbose ?? false;
+    this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
+    this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
@@ -466,7 +472,7 @@ export class EPub {
               }
 
               for (const k of Object.keys(attrs)) {
-                if (allowedAttributes.includes(k)) {
+                if (this.allowedAttributes.includes(k)) {
                   if (k === "type") {
                     if (attrs[k] !== "script") {
                       delete node.properties![k];
@@ -478,7 +484,7 @@ export class EPub {
               }
 
               if (this.version === 2) {
-                if (!allowedXhtml11Tags.includes(node.tagName)) {
+                if (!this.allowedXhtml11Tags.includes(node.tagName)) {
                   if (this.verbose) {
                     console.log(
                       "Warning (content[" + index + "]):",
