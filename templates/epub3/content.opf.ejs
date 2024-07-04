@@ -35,7 +35,7 @@
     </metadata>
 
     <manifest>
-        <% if (locals.cover) { %><item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/><% } %>
+        <% if (locals.cover) { %><item id="cover" href="cover.xhtml" media-type="application/xhtml+xml" properties="svg"/><% } %>
         <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
         <item id="toc" href="toc.xhtml" media-type="application/xhtml+xml" properties="nav"/>
         <item id="css" href="style.css" media-type="text/css" />
@@ -49,7 +49,9 @@
         <% }) %>
 
         <% content.forEach(function(content, index){ %>
-        <item id="content_<%= index %>_<%= content.id %>" href="<%= content.href %>" media-type="application/xhtml+xml" />
+            <% if(!content.isCover){ %>
+                <item id="content_<%= index %>_<%= content.id %>" href="<%= content.href %>" media-type="application/xhtml+xml" />
+            <% } %>
         <% }) %>
 
         <% fonts.forEach(function(font, index){%>

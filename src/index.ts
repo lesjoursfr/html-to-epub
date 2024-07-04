@@ -300,6 +300,7 @@ interface EpubContent {
   templatePath: string;
   excludeFromToc: boolean;
   beforeToc: boolean;
+  isCover: boolean;
 }
 
 interface EpubImage {
@@ -431,6 +432,7 @@ export class EPub {
         templatePath,
         excludeFromToc: true,
         beforeToc: true,
+        isCover: true,
       });
     }
 
@@ -551,6 +553,7 @@ export class EPub {
           templatePath: contentTemplatePath,
           excludeFromToc: content.excludeFromToc === true, // Default to false
           beforeToc: content.beforeToc === true, // Default to false
+          isCover: false,
         };
       })
     );
