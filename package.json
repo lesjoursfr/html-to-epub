@@ -61,7 +61,7 @@
 		"@types/ejs": "^3.1.5",
 		"@types/fs-extra": "^11.0.4",
 		"@types/mocha": "^10.0.10",
-		"@types/node": "^22.10.2",
+		"@types/node": "^22.10.3",
 		"@types/uslug": "^1.0.4",
 		"cross-env": "^7.0.3",
 		"eslint": "^9.17.0",
@@ -71,7 +71,7 @@
 		"prettier": "^3.4.2",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.7.2",
-		"typescript-eslint": "^8.18.2"
+		"typescript-eslint": "^8.19.0"
 	},
 	"packageManager": "yarn@4.6.0"
 }
