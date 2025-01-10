@@ -28,7 +28,7 @@
         <dc:date><%= stringDate %></dc:date>
         <meta property="dcterms:rights">All rights reserved</meta>
         <dc:rights>Copyright &#x00A9; <%= (new Date()).getFullYear() %> by <%= publisher || "anonymous" %></dc:rights>
-        <meta name="cover" content="image_cover"/>
+        <% if(locals.cover) { %><meta name="cover" content="image_cover"/><% } %>
         <meta name="generator" content="epub-gen" />
         <meta property="ibooks:specified-fonts">true</meta>
 
@@ -46,6 +46,9 @@
 
         <% images.forEach(function(image, index){ %>
         <item id="image_<%= index %>" href="images/<%= image.id %>.<%= image.extension %>" media-type="<%= image.mediaType %>" />
+        <% }) %>
+        <% audioVideo.forEach(function(media, index){ %>
+        <item id="media_<%= index %>" href="audiovideo/<%= media.id %>.<%= media.extension %>" media-type="<%= media.mediaType %>" />
         <% }) %>
 
         <% content.forEach(function(content, index){ %>
