@@ -76,10 +76,4 @@
             <% } %>
         <% }) %>
     </spine>
-    <% if (locals.cover || locals.showToC) { %>
-        <guide>
-            <% if (locals.cover) { %><reference type="cover" title="Cover" href="cover.xhtml"/><% } %>
-            <% if (locals.showToC) { %><reference type="text" title="Table of Content" href="toc.xhtml"/><% } %>
-        </guide>
-    <% } %>
 </package>

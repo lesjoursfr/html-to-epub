@@ -26,6 +26,14 @@
         <% }) %>
     </ol>
 </nav>
+<nav epub:type="landmarks" hidden="hidden">
+    <h2>Guide</h2>
+    <ol>
+        <% if (locals.cover) { %><li><a epub:type="cover" href="cover.xhtml">Cover</a></li><% } %>
+        <% if (locals.showToC) { %><li><a epub:type="toc" href="#toc">Table of Contents</a></li><% } %>
+        <li><a epub:type="bodymatter" href="<%= content.find((c) => !c.excludeFromToc).href %>">Start of Content</a></li>
+    </ol>
+</nav>
 
 </body>
 </html>
