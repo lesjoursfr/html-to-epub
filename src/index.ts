@@ -75,6 +75,7 @@ export const defaultAllowedAttributes = [
   "content",
   "contenteditable",
   "contextmenu",
+  "controls",
   "datatype",
   "dir",
   "draggable",
@@ -304,7 +305,7 @@ interface EpubContent {
   isCover: boolean;
 }
 
-interface EpubImage {
+interface EpubMedia {
   id: string;
   url: string;
   dir: string;
@@ -333,7 +334,8 @@ export class EPub {
   css: string | null;
   fonts: Array<string>;
   content: Array<EpubContent>;
-  images: Array<EpubImage>;
+  images: Array<EpubMedia>;
+  audioVideo: Array<EpubMedia>;
   customOpfTemplatePath: string | null;
   customNcxTocTemplatePath: string | null;
   customHtmlCoverTemplatePath: string | null;
@@ -410,11 +412,12 @@ export class EPub {
         .use(rehypeParse, { fragment: true })
         .use(plugins)
         // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
-        .use(rehypeStringify, { allowDangerousHtml: true, voids: [] })
+        .use(rehypeStringify, { allowDangerousHtml: true, voids: [], collapseBooleanAttributes: false })
         .processSync(content)
         .toString();
 
     this.images = [];
+    this.audioVideo = [];
     this.content = [];
 
     // Insert cover in content
@@ -440,7 +443,7 @@ export class EPub {
       });
     }
 
-    // Parse contents & save images
+    // Parse contents & save media
     const contentTemplatePath = resolve(__dirname, "../templates/content.xhtml.ejs");
     const contentOffset = this.content.length;
     this.content.push(
@@ -483,6 +486,10 @@ export class EPub {
                     if (attrs[k] !== "script") {
                       delete node.properties![k];
                     }
+                  } else if (k === "controls") {
+                    if (attrs[k] === true) {
+                      node.properties![k] = "Controls";
+                    }
                   }
                 } else {
                   delete node.properties![k];
@@ -506,42 +513,50 @@ export class EPub {
             visit(tree, "element", validateElements);
           },
           () => (tree) => {
-            const processImgTags = (node: Element) => {
-              if (!["img", "input"].includes(node.tagName)) {
-                return;
-              }
+            const processMediaTags = (node: Element) => {
               const url = node.properties!.src as string | null | undefined;
               if (url === undefined || url === null) {
                 return;
               }
+              let mediaArray;
+              let subfolder;
+              if (["img", "input"].includes(node.tagName)) {
+                mediaArray = this.images;
+                subfolder = "images";
+              } else if (this.version !== 2 && ["audio", "video"].includes(node.tagName)) {
+                mediaArray = this.audioVideo;
+                subfolder = "audiovideo";
+              } else {
+                return;
+              }
 
               let extension, id;
-              const image = this.images.find((element) => element.url === url);
-              if (image) {
-                id = image.id;
-                extension = image.extension;
+              const media = mediaArray.find((element) => element.url === url);
+              if (media) {
+                id = media.id;
+                extension = media.extension;
               } else {
                 id = uuid();
                 const mediaType = mime.getType(url.replace(/\?.*/, ""));
                 if (mediaType === null) {
                   if (this.verbose) {
-                    console.error("[Image Error]", `The image can't be processed : ${url}`);
+                    console.error("[Image Error]", `The media can't be processed : ${url}`);
                   }
                   return;
                 }
                 extension = mime.getExtension(mediaType);
                 if (extension === null) {
                   if (this.verbose) {
-                    console.error("[Image Error]", `The image can't be processed : ${url}`);
+                    console.error("[Image Error]", `The media can't be processed : ${url}`);
                   }
                   return;
                 }
-                this.images.push({ id, url, dir, mediaType, extension });
+                mediaArray.push({ id, url, dir, mediaType, extension });
               }
-              node.properties!.src = `images/${id}.${extension}`;
+              node.properties!.src = `${subfolder}/${id}.${extension}`;
             };
 
-            visit(tree, "element", processImgTags);
+            visit(tree, "element", processMediaTags);
           },
         ]);
 
@@ -572,9 +587,9 @@ export class EPub {
     mkdirSync(resolve(this.tempEpubDir, "./OEBPS"));
 
     if (this.verbose) {
-      console.log("Downloading Images...");
+      console.log("Downloading Media...");
     }
-    await this.downloadAllImage(this.images);
+    await this.downloadAllMedia(this.images, this.audioVideo);
 
     if (this.verbose) {
       console.log("Making Cover...");
@@ -748,20 +763,20 @@ export class EPub {
     }
   }
 
-  private async downloadImage(image: EpubImage): Promise<void> {
-    const filename = resolve(this.tempEpubDir, `./OEBPS/images/${image.id}.${image.extension}`);
+  private async downloadMedia(media: EpubMedia, subfolder: string): Promise<void> {
+    const filename = resolve(this.tempEpubDir, `./OEBPS/${subfolder}/${media.id}.${media.extension}`);
 
-    if (image.url.indexOf("file://") === 0) {
-      const auxpath = image.url.substr(7);
+    if (media.url.indexOf("file://") === 0) {
+      const auxpath = media.url.substr(7);
       fsExtra.copySync(auxpath, filename);
       return;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let requestAction: any;
-    if (image.url.indexOf("http") === 0 || image.url.indexOf("//") === 0) {
+    if (media.url.indexOf("http") === 0 || media.url.indexOf("//") === 0) {
       try {
-        const httpRequest = await axios.get(image.url, {
+        const httpRequest = await axios.get(media.url, {
           responseType: "stream",
           headers: { "User-Agent": this.userAgent },
         });
@@ -769,12 +784,12 @@ export class EPub {
         requestAction.pipe(createWriteStream(filename));
       } catch (err) {
         if (this.verbose) {
-          console.error(`The image can't be processed : ${image.url}, ${err}`);
+          console.error(`The media can't be processed : ${media.url}, ${err}`);
         }
         return;
       }
     } else {
-      requestAction = createReadStream(resolve(image.dir, image.url));
+      requestAction = createReadStream(resolve(media.dir, media.url));
       requestAction.pipe(createWriteStream(filename));
     }
 
@@ -782,7 +797,7 @@ export class EPub {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       requestAction.on("error", (err: any) => {
         if (this.verbose) {
-          console.error("[Download Error]", "Error while downloading", image.url, err);
+          console.error("[Download Error]", "Error while downloading", media.url, err);
         }
         unlinkSync(filename);
         reject(err);
@@ -790,21 +805,25 @@ export class EPub {
 
       requestAction.on("end", () => {
         if (this.verbose) {
-          console.log("[Download Success]", image.url);
+          console.log("[Download Success]", media.url);
         }
         resolve();
       });
     });
   }
 
-  private async downloadAllImage(images: Array<EpubImage>): Promise<void> {
-    if (images.length === 0) {
-      return;
+  private async downloadAllMedia(images: Array<EpubMedia>, audioVideo: Array<EpubMedia>): Promise<void> {
+    if (images.length > 0) {
+      mkdirSync(resolve(this.tempEpubDir, "./OEBPS/images"));
+      for (let index = 0; index < images.length; index++) {
+        await this.downloadMedia(images[index], "images");
+      }
     }
-
-    mkdirSync(resolve(this.tempEpubDir, "./OEBPS/images"));
-    for (let index = 0; index < images.length; index++) {
-      await this.downloadImage(images[index]);
+    if (audioVideo.length > 0) {
+      mkdirSync(resolve(this.tempEpubDir, "./OEBPS/audiovideo"));
+      for (let index = 0; index < audioVideo.length; index++) {
+        await this.downloadMedia(audioVideo[index], "audiovideo");
+      }
     }
   }
 
