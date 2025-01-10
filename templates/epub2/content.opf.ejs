@@ -13,7 +13,7 @@
         <dc:creator opf:role="aut" opf:file-as="<%= author.length ? author.join(",") : author %>"><%= author.length ? author.join(",") : author %></dc:creator>
         <dc:date opf:event="modification"><%= date %></dc:date>
         <dc:language><%= lang || "en" %></dc:language>
-        <meta name="cover" content="image_cover" />
+        <% if(locals.cover) { %><meta name="cover" content="image_cover"/><% } %>
         <meta name="generator" content="epub-gen" />
 
     </metadata>
@@ -57,8 +57,10 @@
             <% } %>
         <% }) %>
     </spine>
-    <guide>
-        <% if (locals.cover) { %><reference type="cover" title="Cover" href="cover.xhtml"/><% } %>
-        <% if (locals.showToC) { %><reference type="text" title="Table of Content" href="toc.xhtml"/><% } %>
-    </guide>
+    <% if (locals.cover || locals.showToC) { %>
+        <guide>
+            <% if (locals.cover) { %><reference type="cover" title="Cover" href="cover.xhtml"/><% } %>
+            <% if (locals.showToC) { %><reference type="text" title="Table of Content" href="toc.xhtml"/><% } %>
+        </guide>
+    <% } %>
 </package>
