@@ -269,6 +269,7 @@ export interface EpubOptions {
   title: string;
   description: string;
   cover?: string;
+  firstImageIsCover?: boolean;
   publisher?: string;
   author?: Array<string> | string;
   tocTitle?: string;
@@ -318,6 +319,7 @@ export class EPub {
   title: string;
   description: string;
   cover: string | null;
+  firstImageIsCover: boolean;
   coverMediaType: string | null;
   coverExtension: string | null;
   coverDimensions = {
@@ -360,6 +362,7 @@ export class EPub {
 
     // Options with defaults
     this.cover = options.cover ?? null;
+    this.firstImageIsCover = options.firstImageIsCover ?? false;
     this.publisher = options.publisher ?? "anonymous";
     this.author = options.author
       ? typeof options.author === "string"

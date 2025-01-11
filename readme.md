@@ -43,6 +43,8 @@ epub.render()
   Publisher name (optional)
 - `cover`:
   Book cover image (optional), File path (absolute path) or web url, eg. `"http://abc.com/book-cover.jpg"` or `"/User/Alice/images/book-cover.jpg"`
+- 'firstImageIsCover':
+  When true, mark the first appearing image as cover. Only effective if `cover` isn't defined. (optional, defaults to false)
 - `output`
   Out put path (absolute path), you can also path output as the second argument when use `new` , eg: `new Epub(options, output)`
 - `version`:
