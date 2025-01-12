@@ -854,8 +854,10 @@ export class EPub {
         if (this.verbose) {
           console.log("Done zipping, clearing temp dir...");
         }
-        fsExtra.removeSync(cwd);
-        resolve();
+        output.end(() => {
+          fsExtra.removeSync(cwd);
+          resolve();
+        });
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       archive.on("error", (err: any) => reject(err));
