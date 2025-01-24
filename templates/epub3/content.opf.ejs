@@ -66,4 +66,9 @@
             <% } %>
         <% }) %>
     </spine>
+    <guide>
+        <% if (locals.cover) { %><reference type="cover" title="Cover" href="cover.xhtml"/><% } %>
+        <% if (locals.showToC) { %><reference type="toc" title="Table of Content" href="toc.xhtml"/><% } %>
+        <reference type="text" title="Start of Content" href="<%= content.find((c) => !c.excludeFromToc).href %>"/>
+    </guide>
 </package>
