@@ -39,10 +39,30 @@ it("Ebook without ToC > generate v3", async () => {
   assert.strictEqual(await runTestOn("book-no-toc-v3"), true);
 }).timeout(12000);
 
+it("Ebook without ToC and without cover > generate v2", async () => {
+  assert.strictEqual(await runTestOn("book-no-cover-no-toc-v2"), true);
+}).timeout(12000);
+
+it("Ebook without ToC and without cover > generate v3", async () => {
+  assert.strictEqual(await runTestOn("book-no-cover-no-toc-v3"), true);
+}).timeout(12000);
+
 it("HTML Page > generate v2", async () => {
   assert.strictEqual(await runTestOn("article-v2"), true);
 }).timeout(12000);
 
 it("HTML Page > generate v3", async () => {
   assert.strictEqual(await runTestOn("article-v3"), true);
+}).timeout(12000);
+
+it("HTML Page first image cover > generate v2", async () => {
+  assert.strictEqual(await runTestOn("article-first-image-cover-v2"), true);
+}).timeout(12000);
+
+it("HTML Page first image cover > generate v3", async () => {
+  assert.strictEqual(await runTestOn("article-first-image-cover-v3"), true);
+}).timeout(12000);
+
+it("Audio and Video page > generate v3", async () => {
+  assert.strictEqual(await runTestOn("audiovideo-v3"), true);
 }).timeout(12000);

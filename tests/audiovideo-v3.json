@@ -1,0 +1,14 @@
+{
+	"title": "Epub3 Audio and Video test",
+	"author": "John Doe",
+	"publisher": "html-to-epub test scripts",
+	"version": 3,
+	"verbose": true,
+	"downloadAudioVideoFiles": true,
+	"content": [
+		{
+			"title": "Epub with Audio and Video",
+			"data": "<p>This epub demonstrates the ability to store videos aud audio.</p><p>It is recommended that Reading Systems support at least one of the H.264 [<cite><a href=\"http://en.wikipedia.org/wiki/Advanced_Video_Coding\">H264</a></cite>] and VP8 [<cite><a href=\"https://en.wikipedia.org/wiki/VP8\">RFC6386</a></cite>] video codecs, but this is not a conformance requirement – a Reading System might support other video codecs, or none at all. Authors and Reading System developers need to take into consideration factors such as breadth of adoption, video playback quality, and technology usage royalty requirements when making a choice to include or implement video in either format, or both.</p><br /><video src=\"http://upload.wikimedia.org/wikipedia/commons/transcoded/8/87/Schlossbergbahn.webm/Schlossbergbahn.webm.1080p.vp9.webm\" controls=\"controls\" style=\"max-width: 100%;\">Your ebook reader does not support Videos</video><p>The recommended audio codecs are AAC or MP3</p><audio src=\"http://upload.wikimedia.org/wikipedia/commons/transcoded/b/bb/Test_ogg_mp3_48kbps.wav/Test_ogg_mp3_48kbps.wav.mp3\" controls=\"controls\">Your ebook reader does not support Audio</audio>"
+		}
+	]
+}
