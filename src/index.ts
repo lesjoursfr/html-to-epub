@@ -269,7 +269,8 @@ export interface EpubOptions {
   title: string;
   description: string;
   cover?: string;
-  firstImageIsCover?: boolean;
+  useFirstImageAsCover?: boolean;
+  downloadAudioVideoFiles?: boolean;
   publisher?: string;
   author?: Array<string> | string;
   tocTitle?: string;
@@ -319,7 +320,8 @@ export class EPub {
   title: string;
   description: string;
   cover: string | null;
-  firstImageIsCover: boolean;
+  useFirstImageAsCover: boolean;
+  downloadAudioVideoFiles: boolean;
   coverMediaType: string | null;
   coverExtension: string | null;
   coverDimensions = {
@@ -362,7 +364,8 @@ export class EPub {
 
     // Options with defaults
     this.cover = options.cover ?? null;
-    this.firstImageIsCover = options.firstImageIsCover ?? false;
+    this.useFirstImageAsCover = options.useFirstImageAsCover ?? false;
+    this.downloadAudioVideoFiles = options.downloadAudioVideoFiles ?? false;
     this.publisher = options.publisher ?? "anonymous";
     this.author = options.author
       ? typeof options.author === "string"
@@ -526,7 +529,11 @@ export class EPub {
               if (["img", "input"].includes(node.tagName)) {
                 mediaArray = this.images;
                 subfolder = "images";
-              } else if (this.version !== 2 && ["audio", "video"].includes(node.tagName)) {
+              } else if (
+                this.downloadAudioVideoFiles &&
+                this.version !== 2 &&
+                ["audio", "video"].includes(node.tagName)
+              ) {
                 mediaArray = this.audioVideo;
                 subfolder = "audiovideo";
               } else {
