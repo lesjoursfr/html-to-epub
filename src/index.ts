@@ -683,8 +683,7 @@ export class EPub {
       // write meta-inf/com.apple.ibooks.display-options.xml [from pedrosanta:xhtml#6]
       writeFileSync(
         `${this.tempEpubDir}/META-INF/com.apple.ibooks.display-options.xml`,
-        `
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <display_options>
   <platform name="*">
     <option name="specified-fonts">true</option>
