@@ -45,7 +45,7 @@
 		"ejs": "^3.1.10",
 		"entities": "^6.0.0",
 		"fs-extra": "^11.3.0",
-		"image-size": "^1.2.0",
+		"image-size": "^2.0.0",
 		"mime": "^4.0.6",
 		"rehype-parse": "^9.0.1",
 		"rehype-stringify": "^10.0.1",
