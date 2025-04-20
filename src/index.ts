@@ -271,7 +271,7 @@ export interface EpubOptions {
   useFirstImageAsCover?: boolean;
   downloadAudioVideoFiles?: boolean;
   publisher?: string;
-  collection?:EpubCollection|EpubCollection[];
+  collection?: EpubCollection | EpubCollection[];
   author?: Array<string> | string;
   tocTitle?: string;
   appendChapterTitles?: boolean;
@@ -316,10 +316,10 @@ interface EpubMedia {
   isCoverImage?: boolean;
 }
 
-interface EpubCollection{
+interface EpubCollection {
   name: string;
-  type?:'series' | 'set'
-  position?:number
+  type?: 'series' | 'set'
+  position?: number
 }
 
 export class EPub {
@@ -327,7 +327,7 @@ export class EPub {
   title: string;
   description: string;
   cover: string | null;
-  collections:EpubCollection[];
+  collections: EpubCollection[];
   useFirstImageAsCover: boolean;
   downloadAudioVideoFiles: boolean;
   coverMediaType: string | null;
