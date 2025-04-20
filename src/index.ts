@@ -271,6 +271,7 @@ export interface EpubOptions {
   useFirstImageAsCover?: boolean;
   downloadAudioVideoFiles?: boolean;
   publisher?: string;
+  collection?:EpubCollection|EpubCollection[];
   author?: Array<string> | string;
   tocTitle?: string;
   appendChapterTitles?: boolean;
@@ -315,11 +316,18 @@ interface EpubMedia {
   isCoverImage?: boolean;
 }
 
+interface EpubCollection{
+  name: string;
+  type?:'series' | 'set'
+  position?:number
+}
+
 export class EPub {
   uuid: string;
   title: string;
   description: string;
   cover: string | null;
+  collections:EpubCollection[];
   useFirstImageAsCover: boolean;
   downloadAudioVideoFiles: boolean;
   coverMediaType: string | null;
@@ -376,6 +384,11 @@ export class EPub {
     if (this.author.length === 0) {
       this.author = ["anonymous"];
     }
+    this.collections =  options.collection
+      ?  Array.isArray(options.collection)
+        ? options.collection
+        : [options.collection]
+      : [];
     this.tocTitle = options.tocTitle ?? "Table Of Contents";
     this.appendChapterTitles = options.appendChapterTitles ?? true;
     this.showToC = options.hideToC !== true;
