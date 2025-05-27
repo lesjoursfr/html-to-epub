@@ -47,6 +47,10 @@ it("Ebook without ToC and without cover > generate v3", async () => {
   assert.strictEqual(await runTestOn("book-no-cover-no-toc-v3"), true);
 }).timeout(12000);
 
+it("Ebook with collection > generate v3", async () => {
+  assert.strictEqual(await runTestOn("book-collection-v3"), true);
+}).timeout(12000);
+
 it("HTML Page > generate v2", async () => {
   assert.strictEqual(await runTestOn("article-v2"), true);
 }).timeout(12000);
