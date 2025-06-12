@@ -29,6 +29,11 @@
         <% if(locals.coverMetaContent) { %><meta name="cover" content="<%= locals.coverMetaContent %>"/><% } %>
         <meta name="generator" content="epub-gen" />
         <meta property="ibooks:specified-fonts">true</meta>
+        <% collections.forEach(function(collection, index){ %>
+        <meta property="belongs-to-collection" id="collectionNum<%= index %>"><%= collection.name %></meta>
+        <% if(collection.type) { %><meta refines="#collectionNum<%= index %>" property="collection-type"><%= collection.type %></meta><% } %>
+        <% if(collection.position) { %><meta refines="#collectionNum<%= index %>" property="group-position"><%= collection.position %></meta><% } %>
+        <% }) %>
     </metadata>
     <manifest>
         <% if (locals.cover) { %><item id="cover" href="cover.xhtml" media-type="application/xhtml+xml" properties="svg"/><% } %>
