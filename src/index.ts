@@ -318,8 +318,8 @@ interface EpubMedia {
 
 interface EpubCollection {
   name: string;
-  type?: 'series' | 'set'
-  position?: number
+  type?: "series" | "set";
+  position?: number;
 }
 
 export class EPub {
@@ -384,8 +384,8 @@ export class EPub {
     if (this.author.length === 0) {
       this.author = ["anonymous"];
     }
-    this.collections =  options.collection
-      ?  Array.isArray(options.collection)
+    this.collections = options.collection
+      ? Array.isArray(options.collection)
         ? options.collection
         : [options.collection]
       : [];
@@ -408,9 +408,12 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
-    this.collections.filter((collection) => collection.type && !['series', 'set'].includes(collection.type))
-      .some((_,__, collection) =>{
-        throw new Error(`Invalid collections: ${collection.map(c => `${c.name}: ${c.type}`).join(', ')}. Allowed types are "series" and "set".`);
+    this.collections
+      .filter((collection) => collection.type && !["series", "set"].includes(collection.type))
+      .some((_, __, collection) => {
+        throw new Error(
+          `Invalid collections: ${collection.map((c) => `${c.name}: ${c.type}`).join(", ")}. Allowed types are "series" and "set".`
+        );
       });
 
     // Temporary folder for work
