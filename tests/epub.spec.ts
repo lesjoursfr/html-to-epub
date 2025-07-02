@@ -51,13 +51,11 @@ it("Ebook with collection > generate v3", async () => {
   assert.strictEqual(await runTestOn("book-collection-v3"), true);
 }).timeout(12000);
 
-it("Ebook with collection > generate v3", async () => {
-  try {
-    await runTestOn("book-collection-v3-unknown-type");
-    assert.fail("Expected an error to be thrown for unknown collection type");
-  } catch {
-    // Expected error to be thrown
-  }
+it("Ebook with wrong collection > generate v3", async () => {
+  await assert.rejects(
+    () => runTestOn("book-collection-v3-unknown-type"),
+    new Error('Invalid collections: Wonderland Collection: THIS IS WORNG. Allowed types are "series" and "set".')
+  );
 }).timeout(12000);
 
 it("HTML Page > generate v2", async () => {

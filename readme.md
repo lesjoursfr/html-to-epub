@@ -102,6 +102,16 @@ epub.render()
 
 - `verbose`:
   specify whether or not to console.log progress messages, default: false.
+- `collection`:
+  Optional. Information about the collection information to which the book belongs. It's should be an object or an array of object if the book belongs to multiple collections. eg. `{name: "Collection A",type: "series", position: 1}`
+
+    **Within each chapter object:**
+    - `name`:
+      The collection's name
+    - `type`:
+      The collection's type: `series` or `set`
+    - `position`:
+      The position in the collection
 
 #### Output
 
