@@ -87,7 +87,6 @@ epub.render()
   Book Chapters content. It's should be an array of objects. eg. `[{title: "Chapter 1",data: "<div>..."}, {data: ""},...]`
 
     **Within each chapter object:**
-
     - `title`:
       optional, Chapter title
     - `author`:
