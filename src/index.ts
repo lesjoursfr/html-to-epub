@@ -271,6 +271,7 @@ export interface EpubOptions {
   useFirstImageAsCover?: boolean;
   downloadAudioVideoFiles?: boolean;
   publisher?: string;
+  collection?: EpubCollection | EpubCollection[];
   author?: Array<string> | string;
   tocTitle?: string;
   appendChapterTitles?: boolean;
@@ -315,11 +316,18 @@ interface EpubMedia {
   isCoverImage?: boolean;
 }
 
+interface EpubCollection {
+  name: string;
+  type?: "series" | "set";
+  position?: number;
+}
+
 export class EPub {
   uuid: string;
   title: string;
   description: string;
   cover: string | null;
+  collections: EpubCollection[];
   useFirstImageAsCover: boolean;
   downloadAudioVideoFiles: boolean;
   coverMediaType: string | null;
@@ -376,6 +384,11 @@ export class EPub {
     if (this.author.length === 0) {
       this.author = ["anonymous"];
     }
+    this.collections = options.collection
+      ? Array.isArray(options.collection)
+        ? options.collection
+        : [options.collection]
+      : [];
     this.tocTitle = options.tocTitle ?? "Table Of Contents";
     this.appendChapterTitles = options.appendChapterTitles ?? true;
     this.showToC = options.hideToC !== true;
@@ -395,6 +408,13 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
+    this.collections
+      .filter((collection) => collection.type && !["series", "set"].includes(collection.type))
+      .some((_, __, collection) => {
+        throw new Error(
+          `Invalid collections: ${collection.map((c) => `${c.name}: ${c.type}`).join(", ")}. Allowed types are "series" and "set".`
+        );
+      });
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
