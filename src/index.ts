@@ -408,6 +408,10 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
+    this.collections.filter((collection) => collection.type && !['series', 'set'].includes(collection.type))
+      .some((_,__, collection) =>{
+        throw new Error(`Invalid collections: ${collection.map(c => `${c.name}: ${c.type}`).join(', ')}. Allowed types are "series" and "set".`);
+      });
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
