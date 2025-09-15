@@ -19,6 +19,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22.19.0"
+          package-manager-cache: false
 
       - name: Install
         run: npm install
@@ -48,6 +49,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          package-manager-cache: false
 
       - name: Install
         run: npm install
