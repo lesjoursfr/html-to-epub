@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - run: corepack enable
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:
