@@ -23,7 +23,10 @@ jobs:
           package-manager-cache: false
           registry-url: "https://registry.npmjs.org"
 
-      - run: npm install
+      - name: Install
+        run: |
+          yarn config set enableImmutableInstalls false
+          yarn install
 
       - run: npm run build
 

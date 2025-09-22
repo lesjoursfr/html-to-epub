@@ -25,7 +25,10 @@ jobs:
           registry-url: "https://npm.pkg.github.com"
           scope: "@lesjoursfr"
 
-      - run: npm install
+      - name: Install
+        run: |
+          yarn config set enableImmutableInstalls false
+          yarn install
 
       - run: npm run build
 
