@@ -1,5 +1,5 @@
 {
-	"extends": "./node_modules/@tsconfig/node20/tsconfig.json",
+	"extends": "./node_modules/@tsconfig/node22/tsconfig.json",
 	"compilerOptions": {
 		/* Visit https://aka.ms/tsconfig.json to read more about this file */
 		"outDir": "lib",
