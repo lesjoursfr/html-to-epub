@@ -8,6 +8,8 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 async function runTestOn(input: string): Promise<boolean> {
   const params = JSON.parse(readFileSync(resolve(__dirname, `./${input}.json`), { encoding: "utf8" })) as EpubOptions;
+  params.userAgent =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36";
   const output = resolve(__dirname, `./${input}.epub`);
 
   const epub = new EPub(params, output);
