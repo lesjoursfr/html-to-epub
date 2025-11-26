@@ -1,5 +1,9 @@
 {
-	"extends": ["config:recommended", ":semanticCommits"],
+	"extends": [
+		"config:recommended",
+		"helpers:pinGitHubActionDigests",
+		":semanticCommits"
+	],
 	"timezone": "Europe/Paris",
 	"schedule": ["before 4:00 am on the first day of the month"],
 	"rangeStrategy": "bump",
