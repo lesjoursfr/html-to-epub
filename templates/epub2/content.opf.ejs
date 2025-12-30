@@ -31,12 +31,12 @@
         <% fonts.forEach(function(font, index) { %><item id="font_<%= index %>" href="fonts/<%= font %>" media-type="application/x-font-ttf" /><% }) %>
     </manifest>
     <spine toc="ncx">
+        <% if (locals.cover) { %><itemref idref="cover"/><% } %>
         <% content.forEach(function(content, index){ %>
             <% if(content.beforeToc){ %>
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>
-        <% if (locals.cover) { %><itemref idref="cover"/><% } %>
         <% if (locals.showToC) { %><itemref idref="toc" /><% } %>
         <% content.forEach(function(content, index){ %>
             <% if(!content.beforeToc){ %>
