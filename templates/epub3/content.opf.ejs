@@ -54,14 +54,14 @@
     </manifest>
     <spine toc="ncx">
         <% content.forEach(function(content, index){ %>
-            <% if(content.beforeToc && !content.excludeFromToc){ %>
+            <% if(content.beforeToc){ %>
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>
         <% if (locals.cover) { %><itemref idref="cover"/><% } %>
         <% if (locals.showToC) { %><itemref idref="toc" /><% } %>
         <% content.forEach(function(content, index){ %>
-            <% if(!content.beforeToc && !content.excludeFromToc){ %>
+            <% if(!content.beforeToc){ %>
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>

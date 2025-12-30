@@ -79,3 +79,11 @@ it("HTML Page first image cover > generate v3", async () => {
 it("Audio and Video page > generate v3", async () => {
   assert.strictEqual(await runTestOn("audiovideo-v3"), true);
 }).timeout(12000);
+
+it("beforeToc content excluded from ToC > generate v3", async () => {
+  assert.strictEqual(await runTestOn("book-before-toc-excluded-v3"), true);
+}).timeout(12000);
+
+it("beforeToc content excluded from ToC > generate v2", async () => {
+  assert.strictEqual(await runTestOn("book-before-toc-excluded-v2"), true);
+}).timeout(12000);
