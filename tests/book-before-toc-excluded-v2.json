@@ -1,0 +1,17 @@
+{
+	"title": "Before TOC Excluded V2",
+	"description": "Ensure beforeToc items excluded from the ToC still render in the spine.",
+	"version": 2,
+	"content": [
+		{
+			"title": "Foreword",
+			"data": "<p>This foreword should appear before the table of contents.</p>",
+			"beforeToc": true,
+			"excludeFromToc": true
+		},
+		{
+			"title": "Chapter One",
+			"data": "<p>The first chapter content.</p>"
+		}
+	]
+}
