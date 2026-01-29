@@ -1,7 +1,7 @@
 import archiver from "archiver";
 import axios from "axios";
 import { remove as diacritics } from "diacritics";
-import { renderFile } from "ejs";
+import ejs from "ejs";
 import { encodeXML } from "entities";
 import {
   createReadStream,
@@ -699,7 +699,7 @@ export class EPub {
 
     // Write content files
     for (const content of this.content) {
-      const result = await renderFile(
+      const result = await ejs.renderFile(
         content.templatePath,
         {
           ...this,
@@ -741,20 +741,20 @@ export class EPub {
     if (!existsSync(opfPath)) {
       throw new Error("Custom file to OPF template not found.");
     }
-    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/content.opf"), await renderFile(opfPath, this));
+    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/content.opf"), await ejs.renderFile(opfPath, this));
 
     const ncxTocPath = this.customNcxTocTemplatePath || resolve(__dirname, "../templates/toc.ncx.ejs");
     if (!existsSync(ncxTocPath)) {
       throw new Error("Custom file the NCX toc template not found.");
     }
-    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.ncx"), await renderFile(ncxTocPath, this));
+    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.ncx"), await ejs.renderFile(ncxTocPath, this));
 
     const htmlTocPath =
       this.customHtmlTocTemplatePath || resolve(__dirname, `../templates/epub${this.version}/toc.xhtml.ejs`);
     if (!existsSync(htmlTocPath)) {
       throw new Error("Custom file to HTML toc template not found.");
     }
-    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.xhtml"), await renderFile(htmlTocPath, this));
+    writeFileSync(resolve(this.tempEpubDir, "./OEBPS/toc.xhtml"), await ejs.renderFile(htmlTocPath, this));
   }
 
   private async makeCover(): Promise<void> {
