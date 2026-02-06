@@ -1,28 +1,7 @@
 {
-	"extends": [
-		"config:recommended",
-		"helpers:pinGitHubActionDigests",
-		":semanticCommits"
-	],
-	"timezone": "Europe/Paris",
-	"schedule": ["before 4:00 am on the first day of the month"],
-	"rangeStrategy": "bump",
-	"packageRules": [
-		{
-			"matchDatasources": ["npm"],
-			"minimumReleaseAge": "3 days"
-		},
-		{
-			"matchDatasources": ["npm"],
-			"matchPackageNames": ["*"],
-			"matchUpdateTypes": ["minor", "patch"],
-			"groupName": "all non-major dependencies",
-			"groupSlug": "all-minor-patch",
-			"automerge": true,
-			"automergeType": "pr",
-			"automergeStrategy": "squash"
-		}
-	],
-	"ignoreDeps": [],
-	"ignorePaths": []
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["local>lesjoursfr/.github"],
+	"lockFileMaintenance": {
+		"enabled": false
+	}
 }
