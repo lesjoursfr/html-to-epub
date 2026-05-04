@@ -63,6 +63,4 @@ jobs:
           yarn install
 
       - name: Run tests
-        env:
-          NODE_OPTIONS: --loader=ts-node/esm
-        run: npx mocha
+        run: npm run test

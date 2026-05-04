@@ -1,11 +1,12 @@
 import eslint from "@eslint/js";
 import prettierConfig from "eslint-config-prettier";
+import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
   eslint.configs.recommended,
-  ...tseslint.configs.recommended,
+  tseslint.configs.recommended,
   {
     languageOptions: {
       parserOptions: {
@@ -14,7 +15,7 @@ export default tseslint.config(
         ecmaVersion: 2022,
         globals: {
           ...globals.es2022,
-          ...globals.node,
+          ...globals.nodeBuiltin,
         },
       },
     },
@@ -23,8 +24,8 @@ export default tseslint.config(
   {
     ignores: [
       "package.json",
-      "eslint.config.mjs",
-      "prettier.config.mjs",
+      "eslint.config.js",
+      "prettier.config.js",
       "node_modules/*",
       ".yarn/*",
       "lib/*",

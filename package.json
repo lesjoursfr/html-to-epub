@@ -3,7 +3,10 @@
 	"version": "6.0.3",
 	"description": "A library to generate EPUB from HTML. Inspired by epub-gen.",
 	"license": "MIT",
-	"repository": "lesjoursfr/html-to-epub",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lesjoursfr/html-to-epub.git"
+	},
 	"homepage": "https://github.com/lesjoursfr/html-to-epub#readme",
 	"bugs": {
 		"url": "https://github.com/lesjoursfr/html-to-epub/issues"
@@ -20,14 +23,9 @@
 		"ebook",
 		"html"
 	],
-	"type": "module",
 	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
-	"files": [
-		"lib/**/*",
-		"src/**/*",
-		"templates/**/*"
-	],
+	"type": "module",
 	"scripts": {
 		"freshlock": "rm -rf node_modules/ && rm .yarn/install-state.gz && rm yarn.lock && yarn",
 		"check-lint": "eslint",
@@ -40,7 +38,7 @@
 	},
 	"dependencies": {
 		"archiver": "^7.0.1",
-		"axios": "^1.15.0",
+		"axios": "^1.15.2",
 		"diacritics": "^1.3.0",
 		"ejs": "^5.0.2",
 		"entities": "^8.0.0",
@@ -64,14 +62,14 @@
 		"@types/node": "24.12.2",
 		"@types/uslug": "1.0.4",
 		"cross-env": "10.1.0",
-		"eslint": "10.2.0",
+		"eslint": "10.2.1",
 		"eslint-config-prettier": "10.1.8",
 		"globals": "17.5.0",
 		"mocha": "11.7.5",
 		"prettier": "3.8.3",
 		"ts-node": "10.9.2",
-		"typescript": "6.0.2",
-		"typescript-eslint": "8.58.2"
+		"typescript": "6.0.3",
+		"typescript-eslint": "8.59.0"
 	},
-	"packageManager": "yarn@4.13.0"
+	"packageManager": "yarn@4.14.1"
 }

@@ -36,6 +36,6 @@
 		"typescript",
 		"typescriptreact"
 	],
-	"prettier.configPath": "prettier.config.mjs",
+	"prettier.configPath": "prettier.config.js",
 	"prettier.ignorePath": ".prettierignore"
 }
