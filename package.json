@@ -15,7 +15,7 @@
 		"access": "public"
 	},
 	"engines": {
-		"node": "22.x || 24.x"
+		"node": "22.x || 24.x || 26.x"
 	},
 	"keywords": [
 		"epub",
