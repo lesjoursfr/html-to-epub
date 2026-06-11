@@ -1,4 +1,4 @@
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 import axios from "axios";
 import { remove as diacritics } from "diacritics";
 import ejs from "ejs";
@@ -888,7 +888,7 @@ export class EPub {
     const cwd = this.tempEpubDir;
 
     return new Promise((resolve, reject) => {
-      const archive = archiver("zip", { zlib: { level: 9 } });
+      const archive = ZipArchive({ zlib: { level: 9 } });
       const output = createWriteStream(this.output);
       if (this.verbose) {
         console.log("Zipping temp dir to", this.output);
