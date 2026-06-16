@@ -888,7 +888,7 @@ export class EPub {
     const cwd = this.tempEpubDir;
 
     return new Promise((resolve, reject) => {
-      const archive = ZipArchive({ zlib: { level: 9 } });
+      const archive = new ZipArchive({ zlib: { level: 9 } });
       const output = createWriteStream(this.output);
       if (this.verbose) {
         console.log("Zipping temp dir to", this.output);
