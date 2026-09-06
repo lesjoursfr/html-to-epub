@@ -3,19 +3,13 @@ import axios from "axios";
 import { remove as diacritics } from "diacritics";
 import ejs from "ejs";
 import { encodeXML } from "entities";
-import {
-  createReadStream,
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  unlinkSync,
-  writeFileSync,
-} from "fs";
+import { createReadStream, createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import fsExtra from "fs-extra";
 import { Element } from "hast";
 import { imageSizeFromFile } from "image-size/fromFile";
 import mime from "mime";
+import type { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import { basename, dirname, resolve } from "path";
 import rehypeParse from "rehype-parse";
 import rehypeStringify from "rehype-stringify";
@@ -764,15 +758,14 @@ export class EPub {
 
     const destPath = resolve(this.tempEpubDir, `./OEBPS/cover.${this.coverExtension}`);
 
-    let writeStream: fsExtra.ReadStream;
+    let readStream: Readable;
     if (this.cover.slice(0, 4) === "http" || this.cover.slice(0, 2) === "//") {
       try {
-        const httpRequest = await axios.get(this.cover, {
+        const httpRequest = await axios.get<Readable>(this.cover, {
           responseType: "stream",
           headers: { "User-Agent": this.userAgent },
         });
-        writeStream = httpRequest.data;
-        writeStream.pipe(createWriteStream(destPath));
+        readStream = httpRequest.data;
       } catch (err) {
         if (this.verbose) {
           console.error(`The cover image can't be processed : ${this.cover}, ${err}`);
@@ -780,20 +773,17 @@ export class EPub {
         return;
       }
     } else {
-      writeStream = createReadStream(this.cover);
-      writeStream.pipe(createWriteStream(destPath));
+      readStream = createReadStream(this.cover);
     }
 
-    const promiseStream = new Promise<void>((resolve, reject) => {
-      writeStream.on("end", () => resolve());
-      writeStream.on("error", (err: unknown) => {
-        console.error("Error", err);
-        unlinkSync(destPath);
-        reject(err);
-      });
-    });
-
-    await promiseStream;
+    // The readable's end event does not guarantee that the destination has finished writing.
+    try {
+      await pipeline(readStream, createWriteStream(destPath));
+    } catch (err) {
+      console.error("Error", err);
+      rmSync(destPath, { force: true });
+      throw err;
+    }
 
     if (this.verbose) {
       console.log("[Success] cover image downloaded successfully!");
@@ -822,16 +812,14 @@ export class EPub {
       return;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let requestAction: any;
+    let readStream: Readable;
     if (media.url.indexOf("http") === 0 || media.url.indexOf("//") === 0) {
       try {
-        const httpRequest = await axios.get(media.url, {
+        const httpRequest = await axios.get<Readable>(media.url, {
           responseType: "stream",
           headers: { "User-Agent": this.userAgent },
         });
-        requestAction = httpRequest.data;
-        requestAction.pipe(createWriteStream(filename));
+        readStream = httpRequest.data;
       } catch (err) {
         if (this.verbose) {
           console.error(`The media can't be processed : ${media.url}, ${err}`);
@@ -839,27 +827,23 @@ export class EPub {
         return;
       }
     } else {
-      requestAction = createReadStream(resolve(media.dir, media.url));
-      requestAction.pipe(createWriteStream(filename));
+      readStream = createReadStream(resolve(media.dir, media.url));
     }
 
-    return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      requestAction.on("error", (err: any) => {
-        if (this.verbose) {
-          console.error("[Download Error]", "Error while downloading", media.url, err);
-        }
-        unlinkSync(filename);
-        reject(err);
-      });
+    // Finish writing each media file before it can be included in the archive.
+    try {
+      await pipeline(readStream, createWriteStream(filename));
+    } catch (err) {
+      if (this.verbose) {
+        console.error("[Download Error]", "Error while downloading", media.url, err);
+      }
+      rmSync(filename, { force: true });
+      throw err;
+    }
 
-      requestAction.on("end", () => {
-        if (this.verbose) {
-          console.log("[Download Success]", media.url);
-        }
-        resolve();
-      });
-    });
+    if (this.verbose) {
+      console.log("[Download Success]", media.url);
+    }
   }
 
   private async downloadAllMedia(): Promise<void> {
