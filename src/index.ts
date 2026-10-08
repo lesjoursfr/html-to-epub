@@ -433,8 +433,12 @@ export class EPub {
       unified()
         .use(rehypeParse, { fragment: true })
         .use(plugins)
-        // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
-        .use(rehypeStringify, { allowDangerousHtml: true, voids: [], collapseBooleanAttributes: false })
+        // closeSelfClosing: true ensures void elements (img, br, hr) output as valid XHTML self-closing tags (<img ... />)
+        .use(rehypeStringify, {
+          allowDangerousHtml: true,
+          closeSelfClosing: true,
+          collapseBooleanAttributes: false,
+        })
         .processSync(content)
         .toString();
 
