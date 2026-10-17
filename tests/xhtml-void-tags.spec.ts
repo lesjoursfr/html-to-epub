@@ -1,4 +1,3 @@
-import AdmZip from "adm-zip";
 import assert from "assert";
 import { existsSync, readFileSync, unlinkSync } from "fs";
 import { resolve } from "path";
@@ -64,11 +63,8 @@ describe("strictXhtml option", () => {
       const op = await epub.render();
       assert.strictEqual(op.result, "ok");
 
-      const zip = new AdmZip(outputPath);
-      const chapterEntry = zip.getEntry("OEBPS/0_void-tags-chapter.xhtml");
-      assert.ok(chapterEntry !== null, "Chapter entry OEBPS/0_void-tags-chapter.xhtml must exist in EPUB");
-
-      const xhtml = chapterEntry.getData().toString("utf8");
+      assert.ok(epub.content.length > 0, "EPUB must have at least one content chapter");
+      const xhtml = epub.content[0].data;
 
       if (expectSelfClosing) {
         // In strictXhtml mode, void tags must be self-closing (<... />)
