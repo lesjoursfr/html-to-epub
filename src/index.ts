@@ -432,30 +432,6 @@ export class EPub {
       this.coverExtension = null;
     }
 
-    const loadHtml = (content: string, plugins: Plugin[]) => {
-      const html = unified()
-        .use(rehypeParse, { fragment: true })
-        .use(plugins)
-        // Voids: [] is required for epub generation (default compatibility), and causes little/no harm for non-epub usage
-        .use(rehypeStringify, {
-          allowDangerousHtml: true,
-          collapseBooleanAttributes: false,
-          ...(this.strictXhtml ? { closeSelfClosing: true } : { voids: [] }),
-        })
-        .processSync(content)
-        .toString();
-
-      if (!this.strictXhtml) {
-        return html;
-      }
-
-      // Normalize any remaining void elements to XHTML self-closing syntax in strict mode
-      return html.replace(
-        /<(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(\b[^>]*)><\/\1>/g,
-        "<$1$2 />"
-      );
-    };
-
     this.images = [];
     this.audioVideo = [];
     this.content = [];
@@ -510,7 +486,7 @@ export class EPub {
         const dir = dirname(filePath);
 
         // Parse the content
-        const html = loadHtml(content.data, [
+        const html = this.loadHtml(content.data, [
           () => (tree) => {
             visit(tree, "element", (node: Element) => {
               this.validateElement(index, node);
@@ -563,6 +539,25 @@ export class EPub {
       throw new Error("At least one element have to be included in the ToC!");
     }
     this.startOfContentHref = firstContentInToc.href;
+  }
+
+  private loadHtml(content: string, plugins: Plugin[]): string {
+    return (
+      unified()
+        .use(rehypeParse, { fragment: true })
+        .use(plugins)
+        // In default mode, passing `voids: []` tells rehype to treat void elements as regular container elements,
+        // producing explicit closing tags (<img ...></img>) for backward compatibility with legacy EPUB readers (#50).
+        // In strictXhtml mode, omitting `voids` preserves standard void elements and `closeSelfClosing: true`
+        // emits valid self-closing XML tags (<img ... />).
+        .use(rehypeStringify, {
+          allowDangerousHtml: true,
+          collapseBooleanAttributes: false,
+          ...(this.strictXhtml ? { closeSelfClosing: true } : { voids: [] }),
+        })
+        .processSync(content)
+        .toString()
+    );
   }
 
   private validateElement(contentIndex: number, node: Element): void {
