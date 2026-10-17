@@ -541,6 +541,7 @@ export class EPub {
     this.startOfContentHref = firstContentInToc.href;
   }
 
+  // Parses, transforms, and serializes chapter HTML content into XHTML
   private loadHtml(content: string, plugins: Plugin[]): string {
     return (
       unified()
