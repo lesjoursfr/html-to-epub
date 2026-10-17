@@ -285,6 +285,7 @@ export interface EpubOptions {
   tempDir?: string;
   allowedAttributes?: string[];
   allowedXhtml11Tags?: string[];
+  strictXhtml?: boolean;
 }
 
 interface EpubContent {
@@ -354,6 +355,7 @@ export class EPub {
   output: string;
   allowedAttributes: string[];
   allowedXhtml11Tags: string[];
+  strictXhtml: boolean;
   coverMetaContent: string | null;
   startOfContentHref: string;
 
@@ -409,6 +411,7 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
+    this.strictXhtml = options.strictXhtml === true;
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
@@ -429,18 +432,29 @@ export class EPub {
       this.coverExtension = null;
     }
 
-    const loadHtml = (content: string, plugins: Plugin[]) =>
-      unified()
+    const loadHtml = (content: string, plugins: Plugin[]) => {
+      const html = unified()
         .use(rehypeParse, { fragment: true })
         .use(plugins)
-        // closeSelfClosing: true ensures void elements (img, br, hr) output as valid XHTML self-closing tags (<img ... />)
+        // Voids: [] is required for epub generation (default compatibility), and causes little/no harm for non-epub usage
         .use(rehypeStringify, {
           allowDangerousHtml: true,
-          closeSelfClosing: true,
           collapseBooleanAttributes: false,
+          ...(this.strictXhtml ? { closeSelfClosing: true } : { voids: [] }),
         })
         .processSync(content)
         .toString();
+
+      if (!this.strictXhtml) {
+        return html;
+      }
+
+      // Normalize any remaining void elements to XHTML self-closing syntax in strict mode
+      return html.replace(
+        /<(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)(\b[^>]*)><\/\1>/g,
+        "<$1$2 />"
+      );
+    };
 
     this.images = [];
     this.audioVideo = [];

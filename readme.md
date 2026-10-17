@@ -83,6 +83,8 @@ epub.render()
   Optional. For advanced customizations: allowed attributes as part of the XHTML templates. Can extend from exported `defaultAllowedAttributes` constant.
 - `allowedXhtml11Tags`:
   Optional. For advanced customizations: allowed XHTML tags as part of the book's templates. Can extend from exported `defaultAllowedXhtml11Tags` constant.
+- `strictXhtml`:
+  Optional. When `true`, serializes void elements (such as `<img>`, `<br>`, `<hr>`) with standard XML/XHTML self-closing tags (`<img ... />`, `<br />`). Defaults to `false` (outputs `<img ...></img>` for backward compatibility).
 - `content`:
   Book Chapters content. It's should be an array of objects. eg. `[{title: "Chapter 1",data: "<div>..."}, {data: ""},...]`
 
