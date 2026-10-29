@@ -1,5 +1,5 @@
 import assert from "assert";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync, statSync } from "fs";
 import { resolve } from "path";
 import { fileURLToPath } from "url";
 import { EPub, EpubOptions } from "../src/index.js";
@@ -14,7 +14,9 @@ async function runTestOn(input: string): Promise<boolean> {
 
   const epub = new EPub(params, output);
   const op = await epub.render();
-  return op.result === "ok";
+  const fileExists = existsSync(output);
+  const fileSize = fileExists ? statSync(output).size : 0;
+  return op.result === "ok" && fileExists && fileSize > 0;
 }
 
 it("Ebook > generate v2", async () => {

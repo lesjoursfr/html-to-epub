@@ -881,15 +881,17 @@ export class EPub {
       archive.directory(`${cwd}/META-INF`, "META-INF");
       archive.directory(`${cwd}/OEBPS`, "OEBPS");
       archive.pipe(output);
-      archive.on("end", () => {
-        output.end(() => {
-          if (this.verbose) {
-            console.log("Done zipping, clearing temp dir...");
-          }
-          fsExtra.removeSync(cwd);
-          resolve();
-        });
+
+      output.on("close", () => {
+        if (this.verbose) {
+          console.log("Done zipping, clearing temp dir...");
+        }
+        fsExtra.removeSync(cwd);
+        resolve();
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      output.on("error", (err: any) => reject(err));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       archive.on("error", (err: any) => reject(err));
       archive.finalize();
