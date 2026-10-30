@@ -1,5 +1,5 @@
 import { ZipArchive } from "archiver";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { remove as diacritics } from "diacritics";
 import ejs from "ejs";
 import { encodeXML } from "entities";
@@ -821,6 +821,14 @@ export class EPub {
         });
         readStream = httpRequest.data;
       } catch (err) {
+        if (isAxiosError(err) && err.response) {
+          if (this.verbose) {
+            console.error(`The media can't be processed : ${media.url}, ${err} [${err.response.statusText}]`);
+          }
+          err.response.data.destroy();
+          return;
+        }
+
         if (this.verbose) {
           console.error(`The media can't be processed : ${media.url}, ${err}`);
         }
