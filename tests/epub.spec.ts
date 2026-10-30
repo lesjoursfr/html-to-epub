@@ -19,73 +19,75 @@ async function runTestOn(input: string): Promise<boolean> {
   return op.result === "ok" && fileExists && fileSize > 0;
 }
 
-it("Ebook > generate v2", async () => {
-  assert.strictEqual(await runTestOn("book-v2"), true);
-}).timeout(30000);
+describe("Generate EPUBs", () => {
+  it("Ebook > generate v2", async () => {
+    assert.strictEqual(await runTestOn("book-v2"), true);
+  }).timeout(30000);
 
-it("Ebook > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-v3"), true);
-}).timeout(30000);
+  it("Ebook > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-v3"), true);
+  }).timeout(30000);
 
-it("Ebook without cover > generate v2", async () => {
-  assert.strictEqual(await runTestOn("book-no-cover-v2"), true);
-}).timeout(30000);
+  it("Ebook without cover > generate v2", async () => {
+    assert.strictEqual(await runTestOn("book-no-cover-v2"), true);
+  }).timeout(30000);
 
-it("Ebook without cover > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-no-cover-v3"), true);
-}).timeout(30000);
+  it("Ebook without cover > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-no-cover-v3"), true);
+  }).timeout(30000);
 
-it("Ebook without ToC > generate v2", async () => {
-  assert.strictEqual(await runTestOn("book-no-toc-v2"), true);
-}).timeout(30000);
+  it("Ebook without ToC > generate v2", async () => {
+    assert.strictEqual(await runTestOn("book-no-toc-v2"), true);
+  }).timeout(30000);
 
-it("Ebook without ToC > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-no-toc-v3"), true);
-}).timeout(30000);
+  it("Ebook without ToC > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-no-toc-v3"), true);
+  }).timeout(30000);
 
-it("Ebook without ToC and without cover > generate v2", async () => {
-  assert.strictEqual(await runTestOn("book-no-cover-no-toc-v2"), true);
-}).timeout(30000);
+  it("Ebook without ToC and without cover > generate v2", async () => {
+    assert.strictEqual(await runTestOn("book-no-cover-no-toc-v2"), true);
+  }).timeout(30000);
 
-it("Ebook without ToC and without cover > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-no-cover-no-toc-v3"), true);
-}).timeout(30000);
+  it("Ebook without ToC and without cover > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-no-cover-no-toc-v3"), true);
+  }).timeout(30000);
 
-it("Ebook with collection > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-collection-v3"), true);
-}).timeout(30000);
+  it("Ebook with collection > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-collection-v3"), true);
+  }).timeout(30000);
 
-it("Ebook with wrong collection > generate v3", async () => {
-  await assert.rejects(
-    () => runTestOn("book-collection-v3-unknown-type"),
-    new Error('Invalid collections: Wonderland Collection: THIS IS WORNG. Allowed types are "series" and "set".')
-  );
-}).timeout(30000);
+  it("Ebook with wrong collection > generate v3", async () => {
+    await assert.rejects(
+      () => runTestOn("book-collection-v3-unknown-type"),
+      new Error('Invalid collections: Wonderland Collection: THIS IS WORNG. Allowed types are "series" and "set".')
+    );
+  }).timeout(30000);
 
-it("HTML Page > generate v2", async () => {
-  assert.strictEqual(await runTestOn("article-v2"), true);
-}).timeout(30000);
+  it("HTML Page > generate v2", async () => {
+    assert.strictEqual(await runTestOn("article-v2"), true);
+  }).timeout(30000);
 
-it("HTML Page > generate v3", async () => {
-  assert.strictEqual(await runTestOn("article-v3"), true);
-}).timeout(30000);
+  it("HTML Page > generate v3", async () => {
+    assert.strictEqual(await runTestOn("article-v3"), true);
+  }).timeout(30000);
 
-it("HTML Page first image cover > generate v2", async () => {
-  assert.strictEqual(await runTestOn("article-first-image-cover-v2"), true);
-}).timeout(30000);
+  it("HTML Page first image cover > generate v2", async () => {
+    assert.strictEqual(await runTestOn("article-first-image-cover-v2"), true);
+  }).timeout(30000);
 
-it("HTML Page first image cover > generate v3", async () => {
-  assert.strictEqual(await runTestOn("article-first-image-cover-v3"), true);
-}).timeout(30000);
+  it("HTML Page first image cover > generate v3", async () => {
+    assert.strictEqual(await runTestOn("article-first-image-cover-v3"), true);
+  }).timeout(30000);
 
-it("Audio and Video page > generate v3", async () => {
-  assert.strictEqual(await runTestOn("audiovideo-v3"), true);
-}).timeout(30000);
+  it("Audio and Video page > generate v3", async () => {
+    assert.strictEqual(await runTestOn("audiovideo-v3"), true);
+  }).timeout(30000);
 
-it("beforeToc content excluded from ToC > generate v3", async () => {
-  assert.strictEqual(await runTestOn("book-before-toc-excluded-v3"), true);
-}).timeout(30000);
+  it("beforeToc content excluded from ToC > generate v2", async () => {
+    assert.strictEqual(await runTestOn("book-before-toc-excluded-v2"), true);
+  }).timeout(30000);
 
-it("beforeToc content excluded from ToC > generate v2", async () => {
-  assert.strictEqual(await runTestOn("book-before-toc-excluded-v2"), true);
-}).timeout(30000);
+  it("beforeToc content excluded from ToC > generate v3", async () => {
+    assert.strictEqual(await runTestOn("book-before-toc-excluded-v3"), true);
+  }).timeout(30000);
+});
