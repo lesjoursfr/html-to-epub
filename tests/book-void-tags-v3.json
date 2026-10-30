@@ -1,0 +1,13 @@
+{
+	"title": "XHTML Void Tags Test Book",
+	"author": "Test Author",
+	"publisher": "Test Publisher",
+	"version": 3,
+	"verbose": false,
+	"content": [
+		{
+			"title": "Void Tags Chapter",
+			"data": "<p>Test paragraph before image.</p><img src=\"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7\" alt=\"test image\"><br><hr><p>Test paragraph after break and horizontal rule.</p>"
+		}
+	]
+}

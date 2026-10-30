@@ -285,6 +285,7 @@ export interface EpubOptions {
   tempDir?: string;
   allowedAttributes?: string[];
   allowedXhtml11Tags?: string[];
+  strictXhtml?: boolean;
 }
 
 interface EpubContent {
@@ -354,6 +355,7 @@ export class EPub {
   output: string;
   allowedAttributes: string[];
   allowedXhtml11Tags: string[];
+  strictXhtml: boolean;
   coverMetaContent: string | null;
   startOfContentHref: string;
 
@@ -409,6 +411,7 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
+    this.strictXhtml = options.strictXhtml === true;
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
@@ -428,15 +431,6 @@ export class EPub {
       this.coverMediaType = null;
       this.coverExtension = null;
     }
-
-    const loadHtml = (content: string, plugins: Plugin[]) =>
-      unified()
-        .use(rehypeParse, { fragment: true })
-        .use(plugins)
-        // Voids: [] is required for epub generation, and causes little/no harm for non-epub usage
-        .use(rehypeStringify, { allowDangerousHtml: true, voids: [], collapseBooleanAttributes: false })
-        .processSync(content)
-        .toString();
 
     this.images = [];
     this.audioVideo = [];
@@ -492,7 +486,7 @@ export class EPub {
         const dir = dirname(filePath);
 
         // Parse the content
-        const html = loadHtml(content.data, [
+        const html = this.loadHtml(content.data, [
           () => (tree) => {
             visit(tree, "element", (node: Element) => {
               this.validateElement(index, node);
@@ -545,6 +539,26 @@ export class EPub {
       throw new Error("At least one element have to be included in the ToC!");
     }
     this.startOfContentHref = firstContentInToc.href;
+  }
+
+  // Parses, transforms, and serializes chapter HTML content into XHTML
+  private loadHtml(content: string, plugins: Plugin[]): string {
+    return (
+      unified()
+        .use(rehypeParse, { fragment: true })
+        .use(plugins)
+        // In default mode, passing `voids: []` tells rehype to treat void elements as regular container elements,
+        // producing explicit closing tags (<img ...></img>) for backward compatibility with legacy EPUB readers (#50).
+        // In strictXhtml mode, omitting `voids` preserves standard void elements and `closeSelfClosing: true`
+        // emits valid self-closing XML tags (<img ... />).
+        .use(rehypeStringify, {
+          allowDangerousHtml: true,
+          collapseBooleanAttributes: false,
+          ...(this.strictXhtml ? { closeSelfClosing: true } : { voids: [] }),
+        })
+        .processSync(content)
+        .toString()
+    );
   }
 
   private validateElement(contentIndex: number, node: Element): void {
