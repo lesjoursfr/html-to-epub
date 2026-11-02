@@ -1,5 +1,5 @@
 import { ZipArchive } from "archiver";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { remove as diacritics } from "diacritics";
 import ejs from "ejs";
 import { encodeXML } from "entities";
@@ -835,6 +835,14 @@ export class EPub {
         });
         readStream = httpRequest.data;
       } catch (err) {
+        if (isAxiosError(err) && err.response) {
+          if (this.verbose) {
+            console.error(`The media can't be processed : ${media.url}, ${err} [${err.response.statusText}]`);
+          }
+          err.response.data.destroy();
+          return;
+        }
+
         if (this.verbose) {
           console.error(`The media can't be processed : ${media.url}, ${err}`);
         }
@@ -895,15 +903,17 @@ export class EPub {
       archive.directory(`${cwd}/META-INF`, "META-INF");
       archive.directory(`${cwd}/OEBPS`, "OEBPS");
       archive.pipe(output);
-      archive.on("end", () => {
-        output.end(() => {
-          if (this.verbose) {
-            console.log("Done zipping, clearing temp dir...");
-          }
-          fsExtra.removeSync(cwd);
-          resolve();
-        });
+
+      output.on("close", () => {
+        if (this.verbose) {
+          console.log("Done zipping, clearing temp dir...");
+        }
+        fsExtra.removeSync(cwd);
+        resolve();
       });
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      output.on("error", (err: any) => reject(err));
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       archive.on("error", (err: any) => reject(err));
       archive.finalize();

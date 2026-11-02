@@ -33,7 +33,7 @@
     <spine toc="ncx">
         <% if (locals.cover) { %><itemref idref="cover"/><% } %>
         <% content.forEach(function(content, index){ %>
-            <% if(content.beforeToc){ %>
+            <% if(content.beforeToc && !content.isCover){ %>
                 <itemref idref="content_<%= index %>_<%= content.id %>"/>
             <% } %>
         <% }) %>
