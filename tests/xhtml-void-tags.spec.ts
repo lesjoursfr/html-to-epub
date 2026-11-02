@@ -6,7 +6,7 @@ import { EPub, EpubOptions } from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("strictXhtml option", () => {
+describe("useSelfClosingTags option", () => {
   const inputName = "book-void-tags-v3";
   const outputPath = resolve(__dirname, `./${inputName}.epub`);
 
@@ -18,34 +18,34 @@ describe("strictXhtml option", () => {
 
   interface TestCase {
     title: string;
-    strictXhtml?: boolean | null;
+    useSelfClosingTags?: boolean | null;
     expectSelfClosing: boolean;
   }
 
   const testCases: TestCase[] = [
     {
       title: "should preserve backward-compatible non-self-closing tags when omitted (undefined)",
-      strictXhtml: undefined,
+      useSelfClosingTags: undefined,
       expectSelfClosing: false,
     },
     {
       title: "should preserve backward-compatible non-self-closing tags when explicitly false",
-      strictXhtml: false,
+      useSelfClosingTags: false,
       expectSelfClosing: false,
     },
     {
       title: "should preserve backward-compatible non-self-closing tags when null",
-      strictXhtml: null,
+      useSelfClosingTags: null,
       expectSelfClosing: false,
     },
     {
       title: "should output XML self-closing tags when true",
-      strictXhtml: true,
+      useSelfClosingTags: true,
       expectSelfClosing: true,
     },
   ];
 
-  testCases.forEach(({ title, strictXhtml, expectSelfClosing }) => {
+  testCases.forEach(({ title, useSelfClosingTags, expectSelfClosing }) => {
     it(title, async () => {
       const baseParams = JSON.parse(
         readFileSync(resolve(__dirname, `./${inputName}.json`), { encoding: "utf8" })
@@ -53,11 +53,8 @@ describe("strictXhtml option", () => {
 
       const params: EpubOptions = {
         ...baseParams,
-        ...(strictXhtml !== undefined ? { strictXhtml: strictXhtml as boolean } : {}),
+        ...(useSelfClosingTags !== undefined ? { useSelfClosingTags: useSelfClosingTags as boolean } : {}),
       };
-      if (strictXhtml === undefined) {
-        delete params.strictXhtml;
-      }
 
       const epub = new EPub(params, outputPath);
       const op = await epub.render();
@@ -67,7 +64,7 @@ describe("strictXhtml option", () => {
       const xhtml = epub.content[0].data;
 
       if (expectSelfClosing) {
-        // In strictXhtml mode, void tags must be self-closing (<... />)
+        // When useSelfClosingTags is enabled, void tags must be self-closing (<... />)
         assert.match(xhtml, /<img\s[^>]*\/>/, "img tag must be self-closing (<img ... />)");
         assert.match(xhtml, /<br\s*\/>/, "br tag must be self-closing (<br />)");
         assert.match(xhtml, /<hr\s*\/>/, "hr tag must be self-closing (<hr />)");

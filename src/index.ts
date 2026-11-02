@@ -285,7 +285,7 @@ export interface EpubOptions {
   tempDir?: string;
   allowedAttributes?: string[];
   allowedXhtml11Tags?: string[];
-  strictXhtml?: boolean;
+  useSelfClosingTags?: boolean;
 }
 
 interface EpubContent {
@@ -355,7 +355,7 @@ export class EPub {
   output: string;
   allowedAttributes: string[];
   allowedXhtml11Tags: string[];
-  strictXhtml: boolean;
+  useSelfClosingTags: boolean;
   coverMetaContent: string | null;
   startOfContentHref: string;
 
@@ -411,7 +411,7 @@ export class EPub {
     this.verbose = options.verbose ?? false;
     this.allowedAttributes = options.allowedAttributes ?? defaultAllowedAttributes;
     this.allowedXhtml11Tags = options.allowedXhtml11Tags ?? defaultAllowedXhtml11Tags;
-    this.strictXhtml = options.strictXhtml === true;
+    this.useSelfClosingTags = options.useSelfClosingTags === true;
 
     // Temporary folder for work
     this.tempDir = options.tempDir ?? resolve(__dirname, "../tempDir/");
@@ -549,12 +549,12 @@ export class EPub {
         .use(plugins)
         // In default mode, passing `voids: []` tells rehype to treat void elements as regular container elements,
         // producing explicit closing tags (<img ...></img>) for backward compatibility with legacy EPUB readers (#50).
-        // In strictXhtml mode, omitting `voids` preserves standard void elements and `closeSelfClosing: true`
+        // When useSelfClosingTags is true, omitting `voids` preserves standard void elements and `closeSelfClosing: true`
         // emits valid self-closing XML tags (<img ... />).
         .use(rehypeStringify, {
           allowDangerousHtml: true,
           collapseBooleanAttributes: false,
-          ...(this.strictXhtml ? { closeSelfClosing: true } : { voids: [] }),
+          ...(this.useSelfClosingTags ? { closeSelfClosing: true } : { voids: [] }),
         })
         .processSync(content)
         .toString()
